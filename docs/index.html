@@ -281,7 +281,7 @@
 
       <!-- TODO: Swap the two placeholder clips for real Peg Insert / Gear Mesh recordings
            when they are available. -->
-      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 720px; margin: 0 auto 2rem;">
+      <div data-sync-videos style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 720px; margin: 0 auto 2rem;">
         <div>
           <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
             <source src="static/videos/placeholder_peg_insert.mp4" type="video/mp4">
@@ -753,7 +753,7 @@
           <p style="font-weight: 600; color: #555; margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
             Peg Insert
           </p>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 680px; margin: 0 auto;">
+          <div data-sync-videos style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 680px; margin: 0 auto;">
             <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
               <source src="static/videos/placeholder_peg_insert.mp4" type="video/mp4">
             </video>
@@ -768,7 +768,7 @@
           <p style="font-weight: 600; color: #555; margin-bottom: 0.5rem; margin-top: 1.25rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
             Gear Mesh
           </p>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 680px; margin: 0 auto;">
+          <div data-sync-videos style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 680px; margin: 0 auto;">
             <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
               <source src="static/videos/placeholder_gear_mesh.mp4" type="video/mp4">
             </video>
@@ -783,7 +783,7 @@
           <p style="font-weight: 600; color: #555; margin-bottom: 0.5rem; margin-top: 1.25rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
             Nut Thread
           </p>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+          <div data-sync-videos style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
             <div style="border: 1px solid #dbdbdb; border-radius: 8px; padding: 10px 10px 6px; background: #fafafa;">
               <p class="has-text-centered" style="font-weight: 600; color: #257942; margin-bottom: 0.6rem; font-size: 0.9rem;">
                 &#10003;&nbsp;Success
@@ -828,7 +828,7 @@
           <p style="font-weight: 600; color: #555; margin-bottom: 0.5rem; margin-top: 1.25rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
             Pick &amp; Place (Control Task)
           </p>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 680px; margin: 0 auto;">
+          <div data-sync-videos style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 680px; margin: 0 auto;">
             <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
               <source src="static/videos/pick_place/success_1.mp4" type="video/mp4">
             </video>
@@ -1107,5 +1107,43 @@
 </footer>
 
   </main>
+
+  <!-- Keep each video group's loops in lockstep: start together once every clip in the
+       group is buffered, then correct drift against the group's first video. -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('[data-sync-videos]').forEach(function (group) {
+        var videos = Array.prototype.slice.call(group.querySelectorAll('video'));
+        if (videos.length < 2) return;
+        var started = false;
+        function tryStart() {
+          if (started) return;
+          if (!videos.every(function (v) { return v.readyState >= 3; })) return;
+          started = true;
+          videos.forEach(function (v) {
+            v.currentTime = 0;
+            var p = v.play();
+            if (p && p.catch) p.catch(function () {});
+          });
+        }
+        videos.forEach(function (v) {
+          v.addEventListener('canplaythrough', tryStart);
+        });
+        tryStart();
+        setInterval(function () {
+          if (!started) return;
+          var lead = videos[0];
+          if (lead.paused || !lead.duration) return;
+          videos.slice(1).forEach(function (v) {
+            if (!v.duration) return;
+            var drift = Math.abs(v.currentTime - lead.currentTime);
+            // treat wrap-around (one just looped) as small drift
+            drift = Math.min(drift, Math.abs(drift - Math.min(v.duration, lead.duration)));
+            if (drift > 0.3) v.currentTime = Math.min(lead.currentTime, v.duration - 0.05);
+          });
+        }, 5000);
+      });
+    });
+  </script>
   </body>
   </html>
