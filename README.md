@@ -39,5 +39,4 @@ Typical flow: train the residual policy in `fire_lab` → run it on the real rob
 ---
 
 Based on the paper *"FIRe: Force-Informed Residual Policy for Contact-Rich Manipulation with
-Vision-Language-Action Models"* (submitted to IEEE RA-L, 2026). Results, figures, and implementation
-details are on the [project page](https://rcilab.github.io/FIRe/).
+Vision-Language-Action Models"* (submitted to IEEE RA-L, 2026).
