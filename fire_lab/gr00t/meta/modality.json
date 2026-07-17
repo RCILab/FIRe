@@ -1,0 +1,47 @@
+{
+    "state": {
+        "eef_position": {
+            "start": 0,
+            "end": 3
+        },
+        "eef_quaternion": {
+            "start": 3,
+            "end": 7,
+            "rotation_type": "quaternion"
+        },
+        "gripper_qpos": {
+            "start": 7,
+            "end": 9
+        }
+    },
+    "action": { 
+        "eef_position_delta": {
+            "start": 0,
+            "end": 3
+        },
+        "eef_rotation_delta": {
+            "start": 3,
+            "end": 6,
+            "rotation_type": "axis_angle"
+        },
+        "gripper_close": {
+            "start": 6,
+            "end": 7
+        }
+    },
+    "video": {
+        "left_view": {
+            "original_key": "observation.images.left_view"
+        },
+        "right_view": {
+            "original_key": "observation.images.right_view"
+        },
+        "wrist_view": {
+            "original_key": "observation.images.wrist_view"
+        }
+    },
+    "annotation": {
+        "human.action.task_description": {},
+        "human.validity": {}
+    }
+}

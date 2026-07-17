@@ -1,43 +1,38 @@
-# FIRe — Project Page
+# FIRe — Force-Informed Residual Policy
 
-Project page for **FIRe: Force-Informed Residual Policy for Contact-Rich Manipulation with
-Vision-Language-Action Models** (Pak, Cho, and Kim; submitted to IEEE RA-L, 2026).
+FIRe improves a **Vision-Language-Action (VLA)** model at **contact-rich robotic manipulation**
+(peg insertion, gear meshing, nut threading) by adding a **force-aware residual RL policy** on top of
+it. The VLA plans from vision and language; the residual policy watches contact force and adds fine
+corrections at every control step. It is trained in simulation and runs zero-shot on a real Franka FR3.
 
-- **Live page**: https://rcilab.github.io/FIRe/
-- **Code**: https://github.com/chohh7391/FIRe
+![FIRe overview](assets/overview.png)
 
-The page lives in [`docs/`](docs/) and is served by GitHub Pages
-(Settings → Pages → Deploy from a branch → `main` / `docs`).
+*Without the residual (top) the VLA-only policy fails; with FIRe's force-aware residual (bottom) the
+contact-rich assembly succeeds.*
 
-## Contents
+## Repository layout
 
-Built from the paper source (`paper/_2026__RAL___VLA_RL/`): abstract, methodology, the five research
-questions, simulation and real-robot results, per-backbone results, and an appendix carrying the
-implementation settings and **the PPO hyperparameters the paper defers to this page**.
+- **[`fire_lab/`](fire_lab/README.md)** — simulation & training (Isaac Lab). Trains the residual RL
+  policy on a frozen VLA and integrates the VLA backends (GR00T, pi05, OpenVLA).
+- **[`fire_deploy/`](fire_deploy/README.md)** — real-robot deployment (ROS 2). Runs the trained
+  models on a physical Franka FR3.
 
-Figures are rendered from the paper's PDFs at 150 dpi and cropped:
-
-| Page image | Paper source |
-| --- | --- |
-| `figure1_tasks.png` | `figure1.pdf` (task snapshots, cropped) |
-| `figure2.png` | `figure2.pdf` (system overview) |
-| `figure3_a_platform.png` | `figure3_a.pdf` (robot platform, cropped) |
-| `figure3_b.png` | `figure3_b.pdf` (task parts) |
-| `figure4.png` | `figure4.pdf` (learning curves) |
-| `figure5.png` | `figure5.pdf` (pose-noise robustness) |
-| `figure6.png` | `figure6.pdf` (failure modes) |
-
-To regenerate after the paper's figures change:
+## Getting started
 
 ```bash
-pdftocairo -png -r 150 -singlefile figure/figureN.pdf docs/static/images/figureN
+git clone --recurse-submodules https://github.com/chohh7391/FIRe.git
+cd FIRe
 ```
 
-## Editing
+The two components have **separate, incompatible environments** — set up each in its own conda env,
+following its README:
 
-- Content: edit `docs/index.html` (search for `TODO` — paper PDF, arXiv/YouTube links, social preview).
-- Paper PDF: put it at `docs/static/pdfs/FIRe.pdf` and uncomment the Paper button.
-- Media: images in `docs/static/images/`, videos in `docs/static/videos/`.
-- Social preview: create a 1200x630px image at `docs/static/images/social_preview.png`.
+- Simulation / training → **[`fire_lab/README.md`](fire_lab/README.md)** (Isaac Sim 5.1, Python 3.11)
+- Real-robot deployment → **[`fire_deploy/README.md`](fire_deploy/README.md)** (Python 3.10, ROS 2)
 
-Based on the [Academic Project Page Template](https://github.com/eliahuhorwitz/Academic-project-page-template).
+Typical flow: train the residual policy in `fire_lab` → run it on the real robot from `fire_deploy`.
+
+---
+
+Based on the paper *"FIRe: Force-Informed Residual Policy for Contact-Rich Manipulation with
+Vision-Language-Action Models"* (submitted to IEEE RA-L, 2026).

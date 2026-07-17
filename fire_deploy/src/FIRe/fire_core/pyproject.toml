@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fire_core"
+version = "0.1.0"
+description = "Core for FIRe"
+requires-python = ">=3.10"
+dependencies = [
+    # "numpy<2.0.0",
+    "huggingface-hub",
+    "rl-games",
+    "torch",
+    "requests",
+    "json-numpy",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = { find = { where = ["src"] } }
