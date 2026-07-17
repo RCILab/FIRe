@@ -279,12 +279,28 @@
   <div class="container is-max-desktop">
     <div class="hero-body" style="text-align: center;">
 
-      <!-- TODO: Teaser video — drop the file at static/videos/teaser.mp4 and uncomment
-      <video poster="" id="teaser-video" autoplay controls muted loop height="100%" preload="metadata"
-             style="width: 100%; max-width: 900px; border-radius: 6px;">
-        <source src="static/videos/teaser.mp4" type="video/mp4">
-      </video>
-      -->
+      <!-- TODO: Swap the two placeholder clips for real Peg Insert / Gear Mesh recordings
+           when they are available. -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 720px; margin: 0 auto 2rem;">
+        <div>
+          <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
+            <source src="static/videos/placeholder_peg_insert.mp4" type="video/mp4">
+          </video>
+          <p style="font-size: 0.85rem; font-weight: 600; color: #555; margin-top: 0.4rem;">Peg Insert</p>
+        </div>
+        <div>
+          <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
+            <source src="static/videos/placeholder_gear_mesh.mp4" type="video/mp4">
+          </video>
+          <p style="font-size: 0.85rem; font-weight: 600; color: #555; margin-top: 0.4rem;">Gear Mesh</p>
+        </div>
+        <div>
+          <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
+            <source src="static/videos/nut_thread/success_1.mp4" type="video/mp4">
+          </video>
+          <p style="font-size: 0.85rem; font-weight: 600; color: #555; margin-top: 0.4rem;">Nut Thread</p>
+        </div>
+      </div>
 
       <div class="content has-text-justified" style="max-width: 860px; margin: 0 auto;">
         <p>
@@ -725,9 +741,9 @@
     <!-- Trial recordings -->
     <div class="columns is-centered" style="margin-top: 3rem;">
       <div class="column is-full">
-        <h3 class="title is-4">Trial Recordings</h3>
+        <h3 class="title is-4">FIRe in Action</h3>
         <p>
-          Recordings of evaluation trials on the real Franka FR3.
+          The FIRe policy executing the assembly tasks on the real Franka FR3.
         </p>
 
         <!-- TODO: Replace the placeholder clips below with real Peg Insert / Gear Mesh recordings:
@@ -737,14 +753,14 @@
           <p style="font-weight: 600; color: #555; margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
             Peg Insert
           </p>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:16/9; object-fit:cover;">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 680px; margin: 0 auto;">
+            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
               <source src="static/videos/placeholder_peg_insert.mp4" type="video/mp4">
             </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:16/9; object-fit:cover;">
+            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
               <source src="static/videos/placeholder_peg_insert.mp4" type="video/mp4">
             </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:16/9; object-fit:cover;">
+            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
               <source src="static/videos/placeholder_peg_insert.mp4" type="video/mp4">
             </video>
           </div>
@@ -752,63 +768,74 @@
           <p style="font-weight: 600; color: #555; margin-bottom: 0.5rem; margin-top: 1.25rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
             Gear Mesh
           </p>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:16/9; object-fit:cover;">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 680px; margin: 0 auto;">
+            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
               <source src="static/videos/placeholder_gear_mesh.mp4" type="video/mp4">
             </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:16/9; object-fit:cover;">
+            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
               <source src="static/videos/placeholder_gear_mesh.mp4" type="video/mp4">
             </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:16/9; object-fit:cover;">
+            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
               <source src="static/videos/placeholder_gear_mesh.mp4" type="video/mp4">
             </video>
           </div>
 
           <p style="font-weight: 600; color: #555; margin-bottom: 0.5rem; margin-top: 1.25rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
-            Nut Thread &mdash; Success
+            Nut Thread
           </p>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 680px; margin: 0 auto;">
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/nut_thread/success_1.mp4" type="video/mp4">
-            </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/nut_thread/success_2.mp4" type="video/mp4">
-            </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/nut_thread/success_3.mp4" type="video/mp4">
-            </video>
-          </div>
-
-          <p style="font-weight: 600; color: #555; margin-bottom: 0.5rem; margin-top: 1.25rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
-            Nut Thread &mdash; Failure
-          </p>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 680px; margin: 0 auto;">
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/nut_thread/failure_1.mp4" type="video/mp4">
-            </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/nut_thread/failure_2.mp4" type="video/mp4">
-            </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/nut_thread/failure_3.mp4" type="video/mp4">
-            </video>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+            <div style="border: 1px solid #dbdbdb; border-radius: 8px; padding: 10px 10px 6px; background: #fafafa;">
+              <p class="has-text-centered" style="font-weight: 600; color: #257942; margin-bottom: 0.6rem; font-size: 0.9rem;">
+                &#10003;&nbsp;Success
+              </p>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
+                  <source src="static/videos/nut_thread/success_1.mp4" type="video/mp4">
+                </video>
+                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
+                  <source src="static/videos/nut_thread/success_2.mp4" type="video/mp4">
+                </video>
+                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
+                  <source src="static/videos/nut_thread/success_3.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
+            <div style="border: 1px solid #dbdbdb; border-radius: 8px; padding: 10px 10px 6px; background: #fafafa;">
+              <p class="has-text-centered" style="font-weight: 600; color: #cc0f35; margin-bottom: 0.6rem; font-size: 0.9rem;">
+                &#10007;&nbsp;Failure
+              </p>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
+                  <source src="static/videos/nut_thread/failure_1.mp4" type="video/mp4">
+                </video>
+                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
+                  <source src="static/videos/nut_thread/failure_2.mp4" type="video/mp4">
+                </video>
+                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
+                  <source src="static/videos/nut_thread/failure_3.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
           </div>
           <p class="fig-caption has-text-centered" style="margin-top: 0.5rem; font-size: 0.85rem; color: #4a4a4a;">
-            Failure trials end aligned but not threaded &mdash; the dominant failure mode discussed above.
-            Successful trials conclude with the manual liftability check used as the success criterion.
+            Both panels run the <em>same</em> FIRe policy &mdash; the failures reflect the remaining
+            limitation of the Nut Thread task rather than a policy difference. Even failed trials end with
+            the nut aligned on the bolt; the bottleneck is thread engagement itself, which is not
+            observable from the end-effector pose. Successful trials conclude with the manual liftability
+            check used as the success criterion.
           </p>
 
           <p style="font-weight: 600; color: #555; margin-bottom: 0.5rem; margin-top: 1.25rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
             Pick &amp; Place (Control Task)
           </p>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:16/9; object-fit:cover;">
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; max-width: 680px; margin: 0 auto;">
+            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
               <source src="static/videos/pick_place/success_1.mp4" type="video/mp4">
             </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:16/9; object-fit:cover;">
+            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
               <source src="static/videos/pick_place/success_2.mp4" type="video/mp4">
             </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:16/9; object-fit:cover;">
+            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
               <source src="static/videos/pick_place/success_3.mp4" type="video/mp4">
             </video>
           </div>
