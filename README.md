@@ -1,5 +1,7 @@
 # FIRe — Force-Informed Residual Policy
 
+**Project page: https://rcilab.github.io/FIRe/**
+
 FIRe improves a **Vision-Language-Action (VLA)** model at **contact-rich robotic manipulation**
 (peg insertion, gear meshing, nut threading) by adding a **force-aware residual RL policy** on top of
 it. The VLA plans from vision and language; the residual policy watches contact force and adds fine
@@ -16,6 +18,8 @@ contact-rich assembly succeeds.*
   policy on a frozen VLA and integrates the VLA backends (GR00T, pi05, OpenVLA).
 - **[`fire_deploy/`](fire_deploy/README.md)** — real-robot deployment (ROS 2). Runs the trained
   models on a physical Franka FR3.
+- **[`docs/`](docs/)** — the project page, served at
+  [rcilab.github.io/FIRe](https://rcilab.github.io/FIRe/) via GitHub Pages.
 
 ## Getting started
 
@@ -35,4 +39,5 @@ Typical flow: train the residual policy in `fire_lab` → run it on the real rob
 ---
 
 Based on the paper *"FIRe: Force-Informed Residual Policy for Contact-Rich Manipulation with
-Vision-Language-Action Models"* (submitted to IEEE RA-L, 2026).
+Vision-Language-Action Models"* (submitted to IEEE RA-L, 2026). Results, figures, and implementation
+details are on the [project page](https://rcilab.github.io/FIRe/).
