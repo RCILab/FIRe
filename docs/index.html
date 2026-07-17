@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Primary Meta Tags -->
+  <meta name="title" content="FIRe: Force-Informed Residual Policy for Contact-Rich Manipulation with Vision-Language-Action Models">
+  <meta name="description" content="FIRe adds a force-aware residual RL policy on top of a frozen Vision-Language-Action model, enabling contact-rich robotic assembly trained in simulation and deployed zero-shot on a real Franka FR3.">
+  <meta name="keywords" content="vision-language-action, VLA, residual reinforcement learning, force control, contact-rich manipulation, robotic assembly, sim-to-real, Franka FR3">
+  <!-- TODO: List all authors -->
+  <meta name="author" content="FIRST_AUTHOR_NAME, SECOND_AUTHOR_NAME">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Robot Control and Interaction (RCI) Laboratory, Kyung Hee University">
+  <meta property="og:title" content="FIRe: Force-Informed Residual Policy for Contact-Rich Manipulation with Vision-Language-Action Models">
+  <meta property="og:description" content="FIRe adds a force-aware residual RL policy on top of a frozen Vision-Language-Action model, enabling contact-rich robotic assembly trained in simulation and deployed zero-shot on a real Franka FR3.">
+  <meta property="og:url" content="https://rcilab.github.io/FIRe/">
+  <!-- TODO: Create a 1200x630px preview image at static/images/social_preview.png -->
+  <meta property="og:image" content="https://rcilab.github.io/FIRe/static/images/social_preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="FIRe - Research Preview">
+  <meta property="article:published_time" content="2026-01-01T00:00:00.000Z">
+  <meta property="article:author" content="FIRST_AUTHOR_NAME">
+  <meta property="article:section" content="Research">
+  <meta property="article:tag" content="vision-language-action">
+  <meta property="article:tag" content="contact-rich manipulation">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="FIRe: Force-Informed Residual Policy for Contact-Rich Manipulation with Vision-Language-Action Models">
+  <meta name="twitter:description" content="FIRe adds a force-aware residual RL policy on top of a frozen Vision-Language-Action model, enabling contact-rich robotic assembly trained in simulation and deployed zero-shot on a real Franka FR3.">
+  <meta name="twitter:image" content="https://rcilab.github.io/FIRe/static/images/social_preview.png">
+  <meta name="twitter:image:alt" content="FIRe - Research Preview">
+
+  <!-- Academic/Research Specific -->
+  <meta name="citation_title" content="FIRe: Force-Informed Residual Policy for Contact-Rich Manipulation with Vision-Language-Action Models">
+  <!-- TODO: Replace with real author names -->
+  <meta name="citation_author" content="FIRST_AUTHOR_LAST, FIRST_AUTHOR_FIRST">
+  <meta name="citation_author" content="SECOND_AUTHOR_LAST, SECOND_AUTHOR_FIRST">
+  <meta name="citation_publication_date" content="2026">
+  <meta name="citation_journal_title" content="IEEE Robotics and Automation Letters (RA-L)">
+  <meta name="citation_pdf_url" content="https://rcilab.github.io/FIRe/paper/paper.pdf">
+
+  <!-- Additional SEO -->
+  <meta name="theme-color" content="#2563eb">
+  <meta name="msapplication-TileColor" content="#2563eb">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://ajax.googleapis.com">
+  <link rel="preconnect" href="https://documentcloud.adobe.com">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+
+  <title>FIRe | RCILab at KHU</title>
+
+  <!-- Favicon and App Icons -->
+  <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
+  <link rel="apple-touch-icon" href="static/images/favicon.ico">
+
+  <!-- Critical CSS - Load synchronously -->
+  <link rel="stylesheet" href="static/css/bulma.min.css">
+  <link rel="stylesheet" href="static/css/index.css">
+
+  <!-- Non-critical CSS - Load asynchronously -->
+  <link rel="preload" href="static/css/bulma-carousel.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="static/css/bulma-slider.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="static/css/fontawesome.all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <link rel="preload" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+
+  <!-- Fallback for browsers that don't support preload -->
+  <noscript>
+    <link rel="stylesheet" href="static/css/bulma-carousel.min.css">
+    <link rel="stylesheet" href="static/css/bulma-slider.min.css">
+    <link rel="stylesheet" href="static/css/fontawesome.all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  </noscript>
+
+  <!-- Fonts - Optimized loading -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Defer non-critical JavaScript -->
+  <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+  <script defer src="static/js/fontawesome.all.min.js"></script>
+  <script defer src="static/js/bulma-carousel.min.js"></script>
+  <script defer src="static/js/bulma-slider.min.js"></script>
+  <script defer src="static/js/index.js"></script>
+
+  <!-- Structured Data for Academic Papers -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "FIRe: Force-Informed Residual Policy for Contact-Rich Manipulation with Vision-Language-Action Models",
+    "description": "FIRe adds a force-aware residual RL policy on top of a frozen Vision-Language-Action model, enabling contact-rich robotic assembly trained in simulation and deployed zero-shot on a real Franka FR3.",
+    "author": [
+      {
+        "@type": "Person",
+        "name": "FIRST_AUTHOR_NAME",
+        "affiliation": {
+          "@type": "Organization",
+          "name": "Kyung Hee University"
+        }
+      }
+    ],
+    "datePublished": "2026-01-01",
+    "publisher": {
+      "@type": "Organization",
+      "name": "IEEE Robotics and Automation Letters (RA-L)"
+    },
+    "url": "https://rcilab.github.io/FIRe/",
+    "image": "https://rcilab.github.io/FIRe/static/images/social_preview.png",
+    "keywords": ["vision-language-action", "residual reinforcement learning", "force control", "contact-rich manipulation", "sim-to-real"],
+    "isAccessibleForFree": true,
+    "mainEntity": {
+      "@type": "WebPage",
+      "@id": "https://rcilab.github.io/FIRe/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+
+  <!-- Scroll to Top Button -->
+  <button class="scroll-to-top" onclick="scrollToTop()" title="Scroll to top" aria-label="Scroll to top">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <main id="main-content">
+  <section class="hero">
+    <div class="hero-body">
+      <div class="container is-max-desktop">
+        <div class="columns is-centered">
+          <div class="column has-text-centered">
+            <h1 class="title is-1 publication-title">FIRe: Force-Informed Residual Policy for Contact-Rich Manipulation with Vision-Language-Action Models</h1>
+            <div class="is-size-5 publication-authors">
+              <!-- TODO: Replace with your paper authors and their personal links -->
+              <span class="author-block">
+                <a href="mailto:FIRST_AUTHOR_EMAIL" target="_blank">Name 1</a>,</span>
+              <span class="author-block">
+                <a href="mailto:SECOND_AUTHOR_EMAIL" target="_blank">Name 2</a><sup>*</sup>,</span>
+            </div>
+
+            <div class="is-size-5 publication-authors">
+              <span class="author-block">Kyung Hee University<br>Submitted to IEEE Robotics and Automation Letters (RA-L)</span>
+              <!-- TODO: Remove this line if no equal contribution -->
+              <span class="eql-cntrb"><small><br><sup>*</sup>Corresponding Author</small></span>
+            </div>
+
+            <div class="column has-text-centered">
+              <div class="publication-links">
+                <!-- TODO: Put your paper PDF at docs/paper/paper.pdf, or link to arXiv once available -->
+                <span class="link-block">
+                  <a href="paper/paper.pdf"
+                    target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                    </span>
+                    <span>Paper</span>
+                  </a>
+                </span>
+
+                <!-- TODO: Uncomment and update once a video is available
+                <span class="link-block">
+                  <a href="https://youtu.be/VIDEO_ID" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                    </span>
+                    <span>Youtube</span>
+                  </a>
+                </span>
+                -->
+
+                <span class="link-block">
+                  <a href="https://github.com/chohh7391/FIRe" target="_blank"
+                    class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                      <i class="fab fa-github"></i>
+                    </span>
+                    <span>Code</span>
+                  </a>
+                </span>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!-- Paper abstract -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <!-- TODO: Replace with the actual paper abstract -->
+          <p>
+            Vision-Language-Action (VLA) models plan robotic manipulation from vision and language, but
+            struggle at contact-rich tasks such as peg insertion, gear meshing, and nut threading, where
+            success depends on regulating contact force rather than following a visual plan. FIRe
+            (Force-Informed Residual Policy) augments a frozen VLA with a force-aware residual
+            reinforcement-learning policy: the VLA provides the base action at every control step, and the
+            residual policy observes contact force and adds fine corrections on top of it. The residual
+            policy is trained entirely in simulation and transfers zero-shot to a real Franka FR3,
+            enabling contact-rich assembly tasks that the VLA-only policy fails to complete.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Method Overview</h2>
+    <div class="content has-text-justified">
+      <p>
+        The VLA plans from vision and language; the force-aware residual policy watches contact force and
+        adds fine corrections at every control step. The residual policy is trained in simulation on top of
+        the frozen VLA and runs zero-shot on a real Franka FR3.
+      </p>
+    </div>
+    <div class="columns is-centered" style="margin-top:1.5rem;">
+      <div class="column is-10 has-text-centered">
+        <img src="static/images/overview.png" alt="FIRe overview: a force-aware residual policy adds corrections on top of a frozen VLA" style="width:100%; border-radius:4px;"/>
+        <p class="has-text-centered" style="font-size:0.9rem; margin-top:0.5rem;">
+          Without the residual (top) the VLA-only policy fails; with FIRe's force-aware residual (bottom)
+          the contact-rich assembly succeeds.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TODO: Add a Results section (tables / plots) once experiment numbers are ready.
+     See the rmrrt page for a table example. -->
+
+<!-- TODO: Add result GIFs/videos. Image-grid example:
+<section class="hero is-small">
+  <div class="hero-body">
+    <div class="container">
+      <h2 class="title is-3">Result Video</h2>
+      <div class="columns is-multiline is-centered">
+        <div class="column is-half">
+          <div class="has-text-centered">
+            <img src="static/images/RESULT_1.gif" alt="" loading="lazy" style="height:300px; object-fit:contain; border-radius:4px;"/>
+            <h2 class="subtitle has-text-centered" style="font-size:0.9rem; margin-top:0.5rem;">
+              Caption for result 1.
+            </h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+-->
+
+<!--BibTex citation -->
+  <!-- TODO: Uncomment and fill in once the paper is published
+  <section class="section" id="BibTeX">
+    <div class="container is-max-desktop content">
+      <div class="bibtex-header">
+        <h2 class="title">BibTeX</h2>
+        <button class="copy-bibtex-btn" onclick="copyBibTeX()" title="Copy BibTeX to clipboard">
+          <i class="fas fa-copy"></i>
+          <span class="copy-text">Copy</span>
+        </button>
+      </div>
+      <pre id="bibtex-code"><code>@article{FIRe2026,
+  title={FIRe: Force-Informed Residual Policy for Contact-Rich Manipulation with Vision-Language-Action Models},
+  author={First Author and Second Author},
+  journal={IEEE Robotics and Automation Letters},
+  year={2026},
+  url={https://rcilab.github.io/FIRe/}
+}</code></pre>
+    </div>
+  </section> -->
+<!--End BibTex citation -->
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content has-text-centered">
+          <p>
+            <a href="https://www.rcilab.khu.ac.kr" target="_blank">Robot Control and Interaction (RCI) Laboratory</a>, Kyung Hee University.
+            <br>
+            This page was built using the <a href="https://github.com/eliahuhorwitz/Academic-project-page-template" target="_blank">Academic Project Page Template</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+  </main>
+  </body>
+  </html>
