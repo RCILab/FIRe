@@ -92,6 +92,10 @@
   <script defer src="static/js/bulma-slider.min.js"></script>
   <script defer src="static/js/index.js"></script>
 
+  <!-- MathJax for LaTeX equation rendering -->
+  <script>MathJax = { tex: { inlineMath: [['\\(', '\\)']] } };</script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
   <!-- Structured Data for Academic Papers -->
   <script type="application/ld+json">
   {
@@ -241,6 +245,19 @@
                 </span>
                 -->
 
+                <!-- Disabled placeholder until the paper is public; swap for the real
+                     Paper button (commented above) once the PDF/arXiv link exists. -->
+                <span class="link-block">
+                  <span class="button is-normal is-rounded is-dark"
+                        style="opacity: 0.45; cursor: not-allowed;"
+                        title="Paper — coming soon">
+                    <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                    </span>
+                    <span>Paper</span>
+                  </span>
+                </span>
+
                 <span class="link-block">
                   <a href="https://github.com/RCILab/FIRe" target="_blank" class="external-link button is-normal is-rounded is-dark">
                     <span class="icon">
@@ -263,17 +280,31 @@
   <div class="container is-max-desktop">
     <div class="hero-body" style="text-align: center;">
 
-      <img src="static/images/figure1_tasks.png" alt="Real-robot execution snapshots of Peg Insert, Gear Mesh, and Nut Thread"
-           style="width: 100%; max-width: 900px; display: block; margin: 0 auto; border-radius: 6px;">
+      <!-- TODO: Teaser video — drop the file at static/videos/teaser.mp4 and uncomment
+      <video poster="" id="teaser-video" autoplay controls muted loop height="100%" preload="metadata"
+             style="width: 100%; max-width: 900px; border-radius: 6px;">
+        <source src="static/videos/teaser.mp4" type="video/mp4">
+      </video>
+      -->
 
-      <h2 class="subtitle has-text-centered" style="margin-top: 1.5rem; font-size: 0.95rem; line-height: 1.5;">
-        <p class="section-intro" style="margin-bottom: 0; color: #4a4a4a;">
-          Real-robot execution snapshots of the three contact-rich assembly tasks. The tasks require
-          precise contact regulation beyond visual observation alone. FIRe augments a frozen VLA with a
-          force-aware residual policy, improving success over the VLA base policy by up to
-          <strong>90.0 percentage points</strong> &mdash; with no task-specific dense reward.
+      <div class="content has-text-justified" style="max-width: 860px; margin: 0 auto;">
+        <p>
+          Vision-Language-Action (VLA) models adapt to new manipulation tasks from only a few
+          demonstrations, yet they remain brittle in contact-rich assembly. They rely on vision and
+          language while force sensing goes largely unused, their chunked actions execute open-loop and
+          cannot react to contact events at the control rate, the end-effector occludes exactly the
+          region where precision matters, and teleoperated demonstrations of contact-rich skills are
+          costly to collect. Reinforcement learning offers the opposite trade-off: it can exploit force
+          feedback for reactive contact control, but demands a dense reward engineered anew for every
+          task.
         </p>
-      </h2>
+        <p>
+          <strong>FIRe</strong> combines the strengths of both. A frozen, action-head fine-tuned VLA
+          provides long-horizon guidance, while a force-aware residual policy &mdash; trained in
+          simulation with only a sparse success reward and a task-agnostic force-aware reward &mdash;
+          corrects the trajectory at every control step and transfers zero-shot to a real Franka FR3.
+        </p>
+      </div>
     </div>
   </div>
 </section>
@@ -315,124 +346,178 @@
       <div class="column"><h2 class="title is-3">Methodology</h2></div>
     </div>
 
+    <!-- (a) System overview -->
     <div class="card-image">
       <img src="static/images/figure2.png" alt="Overview of FIRe" style="width: 100%; border-radius: 6px;">
-      <p class="fig-caption" style="margin-top: 0.75rem; font-size: 1rem; line-height: 1.6;">
+      <p class="fig-caption" style="margin-top: 0.75rem; font-size: 0.95rem; line-height: 1.6; color: #4a4a4a;">
         <strong>Overview of FIRe.</strong>
-        A frozen VLA generates action chunks from its own VLA observation, which includes visual and
-        language inputs, while a force-aware residual policy runs at the control rate and adds bounded
-        corrections from its own observation, which includes proprioceptive state and force.
+        Without FIRe (top row), the frozen VLA executes its action chunks open-loop and the insertion
+        fails. With FIRe (bottom row), the force-aware residual policy \(\pi_{\mathrm{res}}\) corrects
+        every action of the chunk at the control rate, and the same task succeeds.
       </p>
     </div>
 
-    <div class="columns is-multiline" style="margin-top: 2.5rem;">
-
-      <div class="column is-full">
-        <div class="method-card is-horizontal">
-          <div class="card-content">
-            <div class="card-tag">Frozen VLA Base Policy</div>
-            <h4>Long-Horizon Guidance Without Architectural Change</h4>
-          </div>
-          <div>
-            <p>
-              Only the action head of the VLA is fine-tuned; the model is then frozen entirely. It reads its
-              own observation o<sup>VLA</sup> = {images from two external cameras and one wrist camera,
-              absolute EEF pose, language instruction} once per chunk and emits an action chunk of length
-              <em>T</em>, functioning as a trajectory planner. Because the VLA is never modified, the
-              formulation carries over to any backbone that produces compatible action chunks &mdash; no
-              full-model retraining as new VLAs appear.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="column is-full">
-        <div class="method-card is-horizontal">
-          <div class="card-content">
-            <div class="card-tag">Force-Aware Residual Policy</div>
-            <h4>Closed-Loop Contact Control at the Control Rate</h4>
-          </div>
-          <div>
-            <p>
-              The residual policy observes o<sup>res</sup> = {EEF pose relative to the fixed object
-              p<sub>ee</sub><sup>rel</sup> &isin; &#8477;<sup>7</sup>, EEF velocity v<sub>ee</sub> &isin;
-              &#8477;<sup>6</sup>, contact force F<sub>t</sub> &isin; &#8477;<sup>3</sup>, previous action
-              a<sub>t-1</sub>} and outputs a bounded correction a<sup>res</sup> &isin; &#8477;<sup>6</sup>.
-              Force remains available under visual occlusion, so the residual reacts to contact states the
-              VLA cannot see. Both policies act in a common relative-pose representation, so the final
-              command is a simple sum, executed by a task-space impedance controller:
-            </p>
-            <pre style="background:#f5f5f5; border-radius:6px; padding:0.75rem 1rem; font-size:0.95rem; overflow-x:auto;"><code>a_t = a_t^VLA + a_t^res</code></pre>
-          </div>
-        </div>
-      </div>
-
-      <div class="column is-full">
-        <div class="method-card is-horizontal">
-          <div class="card-content">
-            <div class="card-tag">Slow-Fast Asynchronous Loop</div>
-            <h4>Fixed Control Rate Despite VLA Inference Latency</h4>
-          </div>
-          <div>
-            <p>
-              A single VLA inference takes longer than one control step, so FIRe prefetches the next chunk
-              asynchronously at the midpoint of the current one and swaps it in once the current chunk is
-              exhausted. The residual runs every control step (15 Hz) while the VLA is queried once per
-              <em>T</em> = 16 steps, restoring the control-rate contact reactivity that chunked open-loop
-              execution otherwise loses.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="column is-full">
-        <div class="method-card is-horizontal">
-          <div class="card-content">
-            <div class="card-tag">FIRe Reward (FIRe-rew)</div>
-            <h4>No Task-Specific Dense Reward</h4>
-          </div>
-          <div>
-            <p>
-              Goal-directed guidance comes from the VLA base action, which warm-starts exploration near the
-              goal, so no per-task dense reward is needed. The total reward is a sparse task-success
-              indicator plus a task-agnostic force-aware dense term &mdash; identical functional form and
-              hyperparameters on every task:
-            </p>
-            <pre style="background:#f5f5f5; border-radius:6px; padding:0.75rem 1rem; font-size:0.95rem; overflow-x:auto;"><code>r    = r_s + r_f,          r_s = 1[success],  r_f = r_p + r_sh
-
-r_p  = -α · max(0, ‖F_t+1‖ - F_ref)                     (direct penalty)
-r_sh = λ_f · ( γ · φ_f(s_t+1) - φ_f(s_t) )              (potential-based shaping)
-φ_f(s) = -log( c_f · max(0, ‖F(s)‖ - F_ref) + 1 )       (potential)</code></pre>
-            <p>
-              Both terms vanish at or below the reference contact force F<sub>ref</sub>, so r<sub>f</sub>
-              gives no incentive to make contact &mdash; it only shapes <em>how</em> contact unfolds. Being
-              potential-based, r<sub>sh</sub> densifies the signal during over-force contact without
-              altering the optimal policy.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="column is-full">
-        <div class="method-card is-horizontal">
-          <div class="card-content">
-            <div class="card-tag">Training</div>
-            <h4>PPO with an Asymmetric Actor-Critic, Zero-Shot Transfer</h4>
-          </div>
-          <div>
-            <p>
-              The residual is trained with PPO in Isaac Lab. The actor uses only the deployment-accessible
-              observation o<sup>res</sup>, while the critic additionally leverages the privileged simulator
-              state (joint positions, held- and fixed-object poses, controller gain k<sub>p</sub>, pose
-              threshold &epsilon;<sub>p</sub>, and F<sub>ref</sub>). Following FORGE, domain randomization
-              and observation noise on pose and force inputs bridge the sim-to-real gap; the policy deploys
-              zero-shot on the real robot with no real-world fine-tuning.
-            </p>
-          </div>
-        </div>
-      </div>
-
+    <div class="content has-text-justified" style="margin-top: 1.5rem;">
+      <p>
+        FIRe forms the final control command by adding the corrective output of a residual policy to the
+        base action of a frozen VLA. The VLA generates an action chunk of length \(T\) from visual and
+        language inputs and functions as a <strong>trajectory planner</strong> providing long-horizon
+        guidance; the residual policy \(\pi_{\mathrm{res}}\) observes proprioception and contact force at
+        every control step and functions as a <strong>closed-loop contact controller</strong>. Because the
+        VLA weights are never modified &mdash; only its action head is fine-tuned before freezing &mdash;
+        the formulation is compatible with any VLA that produces action chunks, validated on the GR00T,
+        \(\pi_{0.5}\), and OpenVLA backbones.
+      </p>
     </div>
+
+    <!-- (b) Separated observations -->
+    <h3 class="title is-4" style="margin-top: 2.5rem;">Two Policies, Two Observations</h3>
+    <div class="content has-text-justified">
+      <p>
+        Each policy sees only what its role requires, so the two specialize cleanly: the VLA carries the
+        visual and semantic context, while the residual owns the contact state &mdash; a signal that stays
+        informative even when the end-effector occludes exactly the region where precision matters.
+      </p>
+    </div>
+    <div class="columns">
+      <div class="column is-half">
+        <div class="method-card">
+          <div class="card-tag">VLA Observation &mdash; once per chunk</div>
+          <p style="text-align: center; margin: 1.25rem 0; font-size: 1.05rem;">
+            \( o_t^{\mathrm{VLA}} = \{\, \{I_k\},\; p_{ee}^{abs},\; \ell \,\} \)
+          </p>
+          <p>
+            RGB images \(\{I_k\}\) from two external cameras and one wrist camera, the absolute
+            end-effector pose \(p_{ee}^{abs} \in \mathbb{R}^7\), and a natural-language task instruction
+            \(\ell\). Absolute coordinates, rich in semantics, no force &mdash; read only when a new chunk
+            is generated.
+          </p>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="method-card">
+          <div class="card-tag">Residual Observation &mdash; every control step</div>
+          <p style="text-align: center; margin: 1.25rem 0; font-size: 1.05rem;">
+            \( o_t^{\mathrm{res}} = \{\, p_{ee}^{rel},\; v_{ee},\; F_t,\; a_{t-1} \,\} \)
+          </p>
+          <p>
+            End-effector pose \(p_{ee}^{rel} \in \mathbb{R}^7\) relative to the fixed object (e.g., the
+            hole), end-effector velocity \(v_{ee} \in \mathbb{R}^6\), <strong>contact force</strong>
+            \(F_t \in \mathbb{R}^3\) from the wrist sensor, and the previously executed command
+            \(a_{t-1}\).
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- (c) Action composition -->
+    <h3 class="title is-4" style="margin-top: 2.5rem;">Residual Action Composition</h3>
+    <div class="columns is-vcentered">
+      <div class="column is-half">
+        <div class="content has-text-justified">
+          <p>
+            Both policies act in the same <em>relative-pose</em> representation &mdash; a 3-DOF position
+            offset and a 3-DOF rotation offset of the end-effector, expressed in its current frame. The
+            residual output is a bounded correction \(a_t^{\mathrm{res}} \in \mathbb{R}^6\), so the final
+            command is a direct sum,
+          </p>
+          \[ a_t = a_t^{\mathrm{VLA}} + a_t^{\mathrm{res}}, \]
+          <p>
+            executed by a task-space impedance controller at 1&nbsp;kHz while the policies run at
+            15&nbsp;Hz, with commands interpolated in between. Bounding \(a_t^{\mathrm{res}}\) keeps the
+            VLA in charge of <em>where</em> the motion goes, while the residual decides <em>how</em> the
+            contact is negotiated.
+          </p>
+        </div>
+      </div>
+      <div class="column is-half has-text-centered">
+        <img src="static/images/figure1_loop.png" alt="At every step the residual correction is added to the VLA chunk action" style="width: 100%; border-radius: 6px;">
+        <p class="fig-caption" style="margin-top: 0.5rem; font-size: 0.9rem; line-height: 1.6; color: #4a4a4a;">
+          The frozen \(\pi_{\mathrm{VLA}}\) (blue) emits a chunk once; the trained
+          \(\pi_{\mathrm{res}}\) (red) adds a correction to every action in it before execution.
+        </p>
+      </div>
+    </div>
+
+    <!-- (d) Slow-fast asynchronous loop -->
+    <h3 class="title is-4" style="margin-top: 2.5rem;">Slow-Fast Asynchronous Deployment</h3>
+    <div class="content has-text-justified">
+      <p>
+        A single VLA inference takes longer than one control step, so waiting for it would stall the
+        controller exactly when contact demands reactivity. FIRe instead <strong>prefetches</strong> the
+        next chunk asynchronously at the midpoint of the current one and swaps it in once the current
+        chunk is exhausted &mdash; the control loop never blocks, and the residual keeps correcting at a
+        fixed rate throughout.
+      </p>
+    </div>
+    <div style="max-width: 720px; margin: 0 auto; border-top: 2px solid #363636; border-bottom: 2px solid #363636; padding: 0.75rem 1.25rem; font-size: 0.95rem; background: #fafafa;">
+      <p style="border-bottom: 1px solid #dbdbdb; padding-bottom: 0.5rem; margin-bottom: 0.6rem;">
+        <strong>Algorithm 1</strong>&ensp;FIRe deployment control loop
+      </p>
+      <p style="margin-bottom: 0.4rem;">
+        <strong>Require:</strong> frozen VLA \(\pi_{\mathrm{VLA}}\), residual policy
+        \(\pi_{\mathrm{res}}\), chunk length \(T\)
+      </p>
+      <ol style="margin-left: 1.5rem; line-height: 2.0; margin-bottom: 0.5rem;">
+        <li>observe \(o^{\mathrm{VLA}}\);&ensp;\(\mathbf{a}^{\mathrm{VLA}} \leftarrow \pi_{\mathrm{VLA}}(o^{\mathrm{VLA}})\);&ensp;\(i \leftarrow 0\) <span style="color: #7a7a7a;">&nbsp;(initial blocking chunk)</span></li>
+        <li><strong>while</strong> episode not terminated <strong>do</strong></li>
+        <li style="margin-left: 1.2rem;">observe \(o^{\mathrm{res}}\)</li>
+        <li style="margin-left: 1.2rem;"><strong>if</strong> \(i = \lfloor T/2 \rfloor\): observe \(o^{\mathrm{VLA}}\); prefetch the next chunk <span style="color: #7a7a7a;">(non-blocking)</span></li>
+        <li style="margin-left: 1.2rem;"><strong>if</strong> \(i = T\): swap in the prefetched chunk;&ensp;\(i \leftarrow 0\)</li>
+        <li style="margin-left: 1.2rem;">\(a^{\mathrm{res}} \leftarrow \pi_{\mathrm{res}}(o^{\mathrm{res}})\) <span style="color: #7a7a7a;">&nbsp;(every control step)</span></li>
+        <li style="margin-left: 1.2rem;">execute \(a = a^{\mathrm{VLA}}_{i} + a^{\mathrm{res}}\) with the task-space impedance controller</li>
+        <li style="margin-left: 1.2rem;">\(i \leftarrow i + 1\)</li>
+        <li><strong>end while</strong></li>
+      </ol>
+    </div>
+
+    <!-- (e) Force-aware reward -->
+    <h3 class="title is-4" style="margin-top: 2.5rem;">A Reward That Never Needs Re-Engineering</h3>
+    <div class="content has-text-justified">
+      <p>
+        RL for contact-rich assembly usually lives or dies by a dense reward engineered anew for every
+        task. FIRe removes that dependency: the goal-directed guidance such rewards normally provide comes
+        from the VLA base action instead, which warm-starts exploration near the goal. What remains is a
+        sparse success indicator plus a task-agnostic force term &mdash; the <strong>FIRe reward
+        (FIRe-rew)</strong>, identical in form and hyperparameters across all tasks:
+      </p>
+      \[ r = r_s + r_f, \qquad r_s = 1[\text{success}], \qquad r_f = r_p + r_{sh} \]
+      <p>
+        The direct penalty bounds the contact force by penalizing the instantaneous exceedance of a
+        reference level \(F_{\mathrm{ref}}\),
+      </p>
+      \[ r_p = -\alpha \cdot \max\left(0,\; \lVert F_{t+1} \rVert - F_{\mathrm{ref}}\right), \]
+      <p>
+        while the shaping term rewards any transition that <em>reduces</em> the exceedance,
+      </p>
+      \[ r_{sh} = \lambda_f \left( \gamma\, \phi_f(s_{t+1}) - \phi_f(s_t) \right), \qquad
+         \phi_f(s) = -\log\!\left( c_f \cdot \max\left(0,\; \lVert F(s) \rVert - F_{\mathrm{ref}}\right) + 1 \right). \]
+      <p>
+        Being potential-based, \(r_{sh}\) densifies the learning signal during over-force contact
+        <em>without altering the optimal policy</em>. Both force terms vanish at or below
+        \(F_{\mathrm{ref}}\), so \(r_f\) gives no incentive to make or avoid contact &mdash; the drive
+        toward contact comes from \(r_s\) and the VLA base action, and \(r_f\) only shapes <em>how</em>
+        contact unfolds.
+      </p>
+    </div>
+
+    <!-- (f) Training -->
+    <h3 class="title is-4" style="margin-top: 2.5rem;">Training: Asymmetric Actor-Critic, Zero-Shot Transfer</h3>
+    <div class="content has-text-justified">
+      <p>
+        The residual policy is trained with PPO in Isaac Lab using an asymmetric actor-critic: the actor
+        uses only the deployment-accessible observation \(o_t^{\mathrm{res}}\), while the critic
+        additionally receives the privileged simulator state
+      </p>
+      \[ s_t = \{\, o_t^{\mathrm{res}},\; q_j,\; p_h,\; p_h^{rel},\; p_f,\; k_p,\; \epsilon_{p},\; F_{\mathrm{ref}} \,\} \]
+      <p>
+        &mdash; joint positions, held- and fixed-object poses, the low-level controller gain, the success
+        threshold, and the reference contact force. Following FORGE, domain randomization and observation
+        noise on the pose and force inputs bridge the sim-to-real gap; the trained policy is deployed
+        <strong>zero-shot</strong> on the real Franka FR3 with no real-world fine-tuning.
+      </p>
+    </div>
+
   </div>
 </section>
 
@@ -459,6 +544,16 @@ r_sh = λ_f · ( γ · φ_f(s_t+1) - φ_f(s_t) )              (potential-based s
     <div class="columns is-centered" style="margin-top: 2rem;">
       <div class="column is-full">
         <h3 class="title is-4">Experimental Setup</h3>
+
+        <div class="has-text-centered" style="margin-top: 1rem; margin-bottom: 2rem;">
+          <img src="static/images/figure1_tasks.png" alt="Real-robot execution snapshots of Peg Insert, Gear Mesh, and Nut Thread"
+               style="width: 100%; max-width: 820px; border-radius: 6px;">
+          <p class="fig-caption" style="margin-top: 0.5rem; font-size: 0.9rem; line-height: 1.6; color: #4a4a4a;">
+            Real-robot execution snapshots of the three contact-rich assembly tasks. The tasks require
+            precise contact regulation beyond visual observation alone.
+          </p>
+        </div>
+
         <div class="columns is-vcentered" style="margin-top: 0.5rem;">
           <div class="column is-7 has-text-centered">
             <img src="static/images/figure3_a_platform.png" alt="Franka FR3 platform with wrist force sensor and three cameras" style="width: 100%; max-width: 480px; border-radius: 6px;">
