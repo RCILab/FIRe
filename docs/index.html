@@ -989,26 +989,26 @@
               </tr>
             </thead>
             <tbody>
-              <tr><td colspan="2" style="background-color:#fafafa;"><em>Task and success criteria</em></td></tr>
+              <tr><td colspan="2" class="has-text-centered" style="background-color:#fafafa;"><em>Task and success criteria</em></td></tr>
               <tr><td>Peg diameter</td><td>8 mm</td></tr>
               <tr><td>Peg&ndash;hole radial clearance</td><td>0.08 mm</td></tr>
               <tr><td>Success tol., Peg Insert</td><td>lateral &le; 5 mm, depth &le; 25 mm</td></tr>
               <tr><td>Success tol., Gear Mesh</td><td>lateral &le; 10 mm, below surface</td></tr>
               <tr><td>Success tol., Nut Thread</td><td>nut not liftable (manual)</td></tr>
 
-              <tr><td colspan="2" style="background-color:#fafafa;"><em>Low-level control and action</em></td></tr>
+              <tr><td colspan="2" class="has-text-centered" style="background-color:#fafafa;"><em>Low-level control and action</em></td></tr>
               <tr><td>Residual action a<sup>res</sup> (bounded)</td><td>&isin; &#8477;<sup>6</sup></td></tr>
               <tr><td>Residual policy rate</td><td>15 Hz</td></tr>
               <tr><td>Impedance controller rate</td><td>1 kHz</td></tr>
               <tr><td>VLA action-chunk length <em>T</em></td><td>16 control steps</td></tr>
 
-              <tr><td colspan="2" style="background-color:#fafafa;"><em>FIRe-rew hyperparameters</em></td></tr>
+              <tr><td colspan="2" class="has-text-centered" style="background-color:#fafafa;"><em>FIRe-rew hyperparameters</em></td></tr>
               <tr><td>Force-penalty scale &alpha;</td><td>1 &times; 10<sup>&minus;5</sup></td></tr>
               <tr><td>Shaping scale &lambda;<sub>f</sub></td><td>1 &times; 10<sup>&minus;5</sup></td></tr>
               <tr><td>Potential coefficient c<sub>f</sub></td><td>1.0</td></tr>
               <tr><td>Reference contact force F<sub>ref</sub></td><td>10 N (eval; randomized in training)</td></tr>
 
-              <tr><td colspan="2" style="background-color:#fafafa;"><em>Training (PPO, asymmetric actor&ndash;critic)</em></td></tr>
+              <tr><td colspan="2" class="has-text-centered" style="background-color:#fafafa;"><em>Training (PPO, asymmetric actor&ndash;critic)</em></td></tr>
               <tr><td>Parallel environments</td><td>64</td></tr>
               <tr><td>Training epochs</td><td>200</td></tr>
               <tr><td>Checkpoint selection</td><td>best success rate</td></tr>
