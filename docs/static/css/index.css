@@ -1,43 +1,63 @@
 /* Modern CSS Variables for consistent theming */
 :root {
-  --primary-color: #2563eb;
-  --primary-hover: #1d4ed8;
-  --secondary-color: #64748b;
-  --accent-color: #0ea5e9;
-  --text-primary: #1e293b;
-  --text-secondary: #64748b;
-  --text-light: #94a3b8;
-  --background-primary: #ffffff;
-  --background-secondary: #f8fafc;
-  --background-accent: #f1f5f9;
-  --border-color: #e2e8f0;
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --gradient-subtle: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-  --border-radius: 12px;
-  --border-radius-lg: 16px;
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --primary: #2563eb;
+    --primary-hover: #1d4ed8;
+    --primary-light: #eff6ff;
+    --navy: #1e3a5f;
+    --accent: #0ea5e9;
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-light: #94a3b8;
+    --bg-white: #ffffff;
+    --bg-light: #f8fafc;
+    --bg-accent: #f1f5f9;
+    --border-color: #e2e8f0;
+    --border-radius: 12px;
+    --border-radius-lg: 16px;
+    --background-primary: #ffffff;
+    --background-secondary: #f8fafc;
+    --border: #e2e8f0;
+    --grad-primary: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+    --grad-accent: linear-gradient(135deg, #2563eb 0%, #0ea5e9 100%);
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+    --radius: 12px;
+    --radius-lg: 16px;
+    --radius-sm: 6px;
+    --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root {
+    --ViewSDK-mobile-viewport-height: 1vh;
 }
 
 /* Smooth scrolling for better UX */
 html {
   scroll-behavior: smooth;
+  background-color: #fff;
+  font-size: 16px;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  min-width: 300px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
-  font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-  color: var(--text-primary);
-  line-height: 1.6;
-  font-size: 16px;
-  background-color: var(--background-primary);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-family: Inter, "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--text-primary);
+    line-height: 1.6;
+    font-size: 16px;
+    background-color: var(--bg-white);
+    -webkit-font-smoothing: antialiased;
 }
-
 
 /* Modern Button Styles */
 .button {
@@ -519,20 +539,20 @@ code {
   transform: translateY(0);
 }
 
-.dropdown-header {
+/* .dropdown-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 1.5rem 1rem;
   border-bottom: 1px solid var(--border-color);
-}
+} */
 
-.dropdown-header h4 {
+/* .dropdown-header h4 {
   margin: 0;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--text-primary);
-}
+} */
 
 .close-btn {
   background: none;
@@ -751,3 +771,313 @@ a:focus {
 
 
 
+.method-card {
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-sm);
+    height: 100%;
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.4rem 1.5rem;
+    transition: var(--transition);
+}
+
+.method-card:hover {
+    transform: translateY(-5px); 
+    box-shadow: var(--shadow-lg); 
+    border-color: var(--primary); 
+    background-color: var(--primary-light);
+}
+
+.method-card .card-tag {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-bottom: 0.65rem;
+}
+
+.column.is-half, .column.is-half-tablet {
+    flex: none;
+    width: 50%;
+}
+
+element.style {
+    margin-top: 1.5rem;
+}
+
+@media screen and (min-width: 769px), print {
+    .columns:not(.is-desktop) {
+        display: flex;
+    }
+}
+
+.columns.is-multiline {
+    flex-wrap: wrap;
+}
+
+.columns:last-child {
+    margin-bottom: -.75rem;
+}
+
+.columns {
+    margin-left: -.75rem;
+    margin-right: -.75rem;
+    margin-top: -.75rem;
+}
+*, ::after, ::before {
+    box-sizing: inherit;
+}
+user agent stylesheet
+div {
+    display: block;
+    unicode-bidi: isolate;
+}
+body, button, input, optgroup, select, textarea {
+    font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* 기본 상태 */
+.method-card {
+  transition: all 0.3s ease; /* 변화를 부드럽게 (0.3초) */
+  border: 1px solid transparent;
+}
+
+/* 마우스를 올렸을 때 (:hover) */
+.method-card:hover {
+  transform: translateY(-5px); /* 위로 살짝 들림 */
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2); /* 푸른색 그림자로 '반짝'이는 느낌 */
+  border-color: #2563eb; /* 테두리가 선명해짐 */
+  background-color: #ffffff; /* 배경이 밝아지며 강조됨 */
+}
+
+<style>
+  .method-card {
+    padding: 20px;
+    border-radius: 12px;
+    background: #f8faff; /* 연파랑 배경 */
+    transition: 0.3s;
+    cursor: pointer;
+  }
+  .method-card:hover {
+    background: #ffffff;
+    box-shadow: 0 0 15px rgba(37, 99, 235, 0.3); /* 반짝이는 효과 */
+    transform: scale(1.02); /* 살짝 커짐 */
+  }
+</style>
+
+.method-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.method-card .card-tag {
+    /* 기존 스타일 유지 */
+    margin-bottom: 0.5rem;
+}
+
+.method-card h4 {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.15rem; /* 본문보다 확연히 크도록 */
+    font-weight: 800;
+    color: #1e3a5f; /* var(--navy) */
+    margin-bottom: 0.6rem;
+    line-height: 1.2;
+}
+
+.method-card p {
+    font-size: 0.95rem; /* 본문은 약간 작게 조절하여 대비를 줌 */
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2) format('woff2');
+    unicode-range: U +0460 -052F, U +1C80 -1C8A, U +20B4, U +2DE0 -2DFF, U + A640-A69F, U + FE2E-FE2F;
+}
+
+.column {
+    display: block;
+    flex-basis: 0px;
+    flex-grow: 1;
+    flex-shrink: 1;
+    padding: 0.75rem;
+}
+
+.fig-caption {
+    margin: 0.75rem auto 0;
+    font-size: 0.82rem;
+    color: var(--text-light);
+    line-height: 1.55;
+    text-align: center;
+    max-width: 860px;
+}
+
+/* 1열 꽉 찬 배치를 위한 너비 설정 */
+.column.is-full {
+    flex: none;
+    width: 100%;
+}
+
+/* 가로형 카드 레이아웃 */
+.method-card.is-horizontal {
+    flex-direction: row;    /* 좌우 배치 */
+    gap: 2rem;              /* 이미지와 텍스트 사이 간격 */
+    align-items: center;    /* 세로 중앙 정렬 */
+}
+
+/* 카드 내부 이미지 영역 */
+.method-card.is-horizontal .card-image {
+    flex: 0 0 35%;          /* 이미지가 전체 너비의 35%를 차지하도록 고정 */
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.method-card.is-horizontal .card-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+}
+
+/* 텍스트 영역 */
+.method-card.is-horizontal .card-content {
+    flex: 1;                /* 남은 공간을 모두 차지 */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* 모바일 화면(너비 768px 이하) 대응: 다시 세로로 배치 */
+@media screen and (max-width: 768px) {
+    .method-card.is-horizontal {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+    
+    .method-card.is-horizontal .card-image {
+        flex: auto;
+        width: 100%;
+    }
+}
+
+.result-card {
+  border: 1.5px solid #dbdbdb;
+  border-radius: 8px;
+  padding: 1.2rem 2rem;
+  text-align: center;
+  min-width: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-number {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #3273dc;
+  line-height: 1.2;
+}
+
+.result-label {
+  font-size: 0.85rem;
+  color: #555;
+  margin-top: 0.4rem;
+  line-height: 1.4;
+}
+
+/* 1열 꽉 찬 배치를 위한 너비 설정 */
+.column.is-full {
+    flex: none;
+    width: 100%;
+}
+
+/* 가로형 카드 레이아웃 */
+.method-card.is-horizontal {
+    flex-direction: row;    /* 좌우 배치 */
+    gap: 2rem;              /* 이미지와 텍스트 사이 간격 */
+    align-items: center;    /* 세로 중앙 정렬 */
+}
+
+/* 카드 내부 이미지 영역 */
+.method-card.is-horizontal .card-image {
+    flex: 0 0 35%;          /* 이미지가 전체 너비의 35%를 차지하도록 고정 */
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.method-card.is-horizontal .card-image img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+}
+
+/* 텍스트 영역 */
+.method-card.is-horizontal .card-content {
+    flex: 1;                /* 남은 공간을 모두 차지 */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* 모바일 화면(너비 768px 이하) 대응: 다시 세로로 배치 */
+@media screen and (max-width: 768px) {
+    .method-card.is-horizontal {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+    }
+    
+    .method-card.is-horizontal .card-image {
+        flex: auto;
+        width: 100%;
+    }
+}
+
+/* LLM Prompt Blocks */
+.prompt-block {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+.prompt-role {
+  padding: 0.35rem 0.85rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.system-role    { background: #e8eaf6; color: #3949ab; }
+.user-role      { background: #e8f5e9; color: #2e7d32; }
+.assistant-role { background: #fff3e0; color: #e65100; }
+.prompt-pre {
+  margin: 0 !important;
+  padding: 0.9rem 1rem !important;
+  background: #f8f9fa !important;
+  border-radius: 0 !important;
+  font-size: 0.82rem !important;
+  line-height: 1.55 !important;
+  white-space: pre-wrap !important;
+  word-break: break-word !important;
+}
+.prompt-pre code {
+  background: none !important;
+  padding: 0 !important;
+  font-size: inherit !important;
+}
+.llm-tab-btn:hover { color: #2563eb !important; }
