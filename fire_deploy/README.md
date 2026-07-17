@@ -23,7 +23,7 @@ Training the RL residual policy and fine-tuning the VLA model happen in
 ```bash
 conda create -n fire python=3.10
 conda activate fire
-git clone --recurse-submodules https://github.com/chohh7391/FIRe.git
+git clone --recurse-submodules https://github.com/RCILab/FIRe.git
 cd FIRe/fire_deploy
 pip install -r requirements.txt
 ```

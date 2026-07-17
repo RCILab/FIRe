@@ -24,7 +24,7 @@ conda activate fire_lab
 
 # 2) Clone the monorepo (fire_lab lives inside it)
 cd $HOME
-git clone --recurse-submodules https://github.com/chohh7391/FIRe.git
+git clone --recurse-submodules https://github.com/RCILab/FIRe.git
 cd FIRe/fire_lab
 
 # 3) Isaac Sim SDK (v5.1.0)
