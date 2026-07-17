@@ -249,7 +249,7 @@
                      Paper button (commented above) once the PDF/arXiv link exists. -->
                 <span class="link-block">
                   <span class="button is-normal is-rounded is-dark"
-                        style="opacity: 0.45; cursor: not-allowed;"
+                        style="opacity: 0.45; cursor: not-allowed; margin: 8px 4px;"
                         title="Paper — coming soon">
                     <span class="icon">
                       <i class="fas fa-file-pdf"></i>
@@ -412,31 +412,20 @@
 
     <!-- (c) Action composition -->
     <h3 class="title is-4" style="margin-top: 2.5rem;">Residual Action Composition</h3>
-    <div class="columns is-vcentered">
-      <div class="column is-half">
-        <div class="content has-text-justified">
-          <p>
-            Both policies act in the same <em>relative-pose</em> representation &mdash; a 3-DOF position
-            offset and a 3-DOF rotation offset of the end-effector, expressed in its current frame. The
-            residual output is a bounded correction \(a_t^{\mathrm{res}} \in \mathbb{R}^6\), so the final
-            command is a direct sum,
-          </p>
-          \[ a_t = a_t^{\mathrm{VLA}} + a_t^{\mathrm{res}}, \]
-          <p>
-            executed by a task-space impedance controller at 1&nbsp;kHz while the policies run at
-            15&nbsp;Hz, with commands interpolated in between. Bounding \(a_t^{\mathrm{res}}\) keeps the
-            VLA in charge of <em>where</em> the motion goes, while the residual decides <em>how</em> the
-            contact is negotiated.
-          </p>
-        </div>
-      </div>
-      <div class="column is-half has-text-centered">
-        <img src="static/images/figure1_loop.png" alt="At every step the residual correction is added to the VLA chunk action" style="width: 100%; border-radius: 6px;">
-        <p class="fig-caption" style="margin-top: 0.5rem; font-size: 0.9rem; line-height: 1.6; color: #4a4a4a;">
-          The frozen \(\pi_{\mathrm{VLA}}\) (blue) emits a chunk once; the trained
-          \(\pi_{\mathrm{res}}\) (red) adds a correction to every action in it before execution.
-        </p>
-      </div>
+    <div class="content has-text-justified">
+      <p>
+        Both policies act in the same <em>relative-pose</em> representation &mdash; a 3-DOF position
+        offset and a 3-DOF rotation offset of the end-effector, expressed in its current frame. The
+        residual output is a bounded correction \(a_t^{\mathrm{res}} \in \mathbb{R}^6\), so the final
+        command is a direct sum,
+      </p>
+      \[ a_t = a_t^{\mathrm{VLA}} + a_t^{\mathrm{res}}, \]
+      <p>
+        executed by a task-space impedance controller at 1&nbsp;kHz while the policies run at
+        15&nbsp;Hz, with commands interpolated in between. Bounding \(a_t^{\mathrm{res}}\) keeps the
+        VLA in charge of <em>where</em> the motion goes, while the residual decides <em>how</em> the
+        contact is negotiated.
+      </p>
     </div>
 
     <!-- (d) Slow-fast asynchronous loop -->
