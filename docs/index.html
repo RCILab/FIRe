@@ -746,64 +746,45 @@
         </p>
 
         <div style="margin-top: 2rem;">
+          <!-- Layered grid: all clips share one 1fr track system (equal width), with the FIRe and
+               VLA-Only cards drawn as separate background boxes behind them. -->
+          <style>
+            .cmp-grid { display: grid; column-gap: 6px; row-gap: 8px; align-items: start; }
+            .cmp-grid--5v1 { grid-template-columns: 4px repeat(5, 1fr) 4px 2px 4px 1fr 4px; }
+            .cmp-card { grid-row: 1 / 3; border: 1px solid #dbdbdb; border-radius: 8px; background: #fafafa; }
+            .cmp-label { grid-row: 1; z-index: 1; margin: 8px 0 0; text-align: center; font-weight: 600; font-size: 0.9rem; }
+            .cmp-vid { grid-row: 2; z-index: 1; margin-bottom: 8px; width: 100%; border-radius: 6px; aspect-ratio: 9/16; object-fit: cover; }
+          </style>
           <p style="font-weight: 600; color: #555; margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
             Peg Insert
           </p>
-          <div data-sync-videos style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px 6px; align-items: start; border: 1px solid #dbdbdb; border-radius: 8px; padding: 10px; background: #fafafa;">
-            <p class="has-text-centered" style="grid-column: 1 / 6; font-weight: 600; color: #257942; margin-bottom: 0.2rem; font-size: 0.9rem;">
-              &#10003;&nbsp;FIRe
-            </p>
-            <p class="has-text-centered" style="grid-column: 6 / 7; font-weight: 600; color: #cc0f35; margin-bottom: 0.2rem; font-size: 0.9rem;">
-              &#10007;&nbsp;VLA Only
-            </p>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/peg_insert/success_1.mp4" type="video/mp4">
-            </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/peg_insert/success_2.mp4" type="video/mp4">
-            </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/peg_insert/success_3.mp4" type="video/mp4">
-            </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/peg_insert/success_4.mp4" type="video/mp4">
-            </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/peg_insert/success_5.mp4" type="video/mp4">
-            </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/peg_insert/failure_1.mp4" type="video/mp4">
-            </video>
+          <div data-sync-videos class="cmp-grid cmp-grid--5v1">
+            <div class="cmp-card" style="grid-column: 1 / 8;"></div>
+            <div class="cmp-card" style="grid-column: 9 / 12;"></div>
+            <p class="cmp-label" style="grid-column: 1 / 8; color: #257942;">&#10003;&nbsp;FIRe</p>
+            <p class="cmp-label" style="grid-column: 9 / 12; color: #cc0f35;">&#10007;&nbsp;VLA Only</p>
+            <video class="cmp-vid" style="grid-column: 2;" autoplay muted loop playsinline preload="metadata"><source src="static/videos/peg_insert/success_1.mp4" type="video/mp4"></video>
+            <video class="cmp-vid" style="grid-column: 3;" autoplay muted loop playsinline preload="metadata"><source src="static/videos/peg_insert/success_2.mp4" type="video/mp4"></video>
+            <video class="cmp-vid" style="grid-column: 4;" autoplay muted loop playsinline preload="metadata"><source src="static/videos/peg_insert/success_3.mp4" type="video/mp4"></video>
+            <video class="cmp-vid" style="grid-column: 5;" autoplay muted loop playsinline preload="metadata"><source src="static/videos/peg_insert/success_4.mp4" type="video/mp4"></video>
+            <video class="cmp-vid" style="grid-column: 6;" autoplay muted loop playsinline preload="metadata"><source src="static/videos/peg_insert/success_5.mp4" type="video/mp4"></video>
+            <video class="cmp-vid" style="grid-column: 10;" autoplay muted loop playsinline preload="metadata"><source src="static/videos/peg_insert/failure_1.mp4" type="video/mp4"></video>
           </div>
 
           <p style="font-weight: 600; color: #555; margin-bottom: 0.5rem; margin-top: 1.25rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
             Gear Mesh
           </p>
-          <div data-sync-videos style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px 6px; align-items: start; border: 1px solid #dbdbdb; border-radius: 8px; padding: 10px; background: #fafafa;">
-            <p class="has-text-centered" style="grid-column: 1 / 6; font-weight: 600; color: #257942; margin-bottom: 0.2rem; font-size: 0.9rem;">
-              &#10003;&nbsp;FIRe
-            </p>
-            <p class="has-text-centered" style="grid-column: 6 / 7; font-weight: 600; color: #cc0f35; margin-bottom: 0.2rem; font-size: 0.9rem;">
-              &#10007;&nbsp;VLA Only
-            </p>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/gear_mesh/success_1.mp4" type="video/mp4">
-            </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/gear_mesh/success_2.mp4" type="video/mp4">
-            </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/gear_mesh/success_3.mp4" type="video/mp4">
-            </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/gear_mesh/success_4.mp4" type="video/mp4">
-            </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/gear_mesh/success_5.mp4" type="video/mp4">
-            </video>
-            <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-              <source src="static/videos/gear_mesh/failure_1.mp4" type="video/mp4">
-            </video>
+          <div data-sync-videos class="cmp-grid cmp-grid--5v1">
+            <div class="cmp-card" style="grid-column: 1 / 8;"></div>
+            <div class="cmp-card" style="grid-column: 9 / 12;"></div>
+            <p class="cmp-label" style="grid-column: 1 / 8; color: #257942;">&#10003;&nbsp;FIRe</p>
+            <p class="cmp-label" style="grid-column: 9 / 12; color: #cc0f35;">&#10007;&nbsp;VLA Only</p>
+            <video class="cmp-vid" style="grid-column: 2;" autoplay muted loop playsinline preload="metadata"><source src="static/videos/gear_mesh/success_1.mp4" type="video/mp4"></video>
+            <video class="cmp-vid" style="grid-column: 3;" autoplay muted loop playsinline preload="metadata"><source src="static/videos/gear_mesh/success_2.mp4" type="video/mp4"></video>
+            <video class="cmp-vid" style="grid-column: 4;" autoplay muted loop playsinline preload="metadata"><source src="static/videos/gear_mesh/success_3.mp4" type="video/mp4"></video>
+            <video class="cmp-vid" style="grid-column: 5;" autoplay muted loop playsinline preload="metadata"><source src="static/videos/gear_mesh/success_4.mp4" type="video/mp4"></video>
+            <video class="cmp-vid" style="grid-column: 6;" autoplay muted loop playsinline preload="metadata"><source src="static/videos/gear_mesh/success_5.mp4" type="video/mp4"></video>
+            <video class="cmp-vid" style="grid-column: 10;" autoplay muted loop playsinline preload="metadata"><source src="static/videos/gear_mesh/failure_1.mp4" type="video/mp4"></video>
           </div>
 
           <p style="font-weight: 600; color: #555; margin-bottom: 0.5rem; margin-top: 1.25rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
@@ -854,7 +835,7 @@
           <p style="font-weight: 600; color: #555; margin-bottom: 0.5rem; margin-top: 1.25rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
             Pick &amp; Place
           </p>
-          <div data-sync-videos style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 6px; align-items: start; border: 1px solid #dbdbdb; border-radius: 8px; padding: 10px; background: #fafafa; max-width: 680px; margin: 0 auto;">
+          <div data-sync-videos style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 6px; align-items: start; border: 1px solid #dbdbdb; border-radius: 8px; padding: 10px; background: #fafafa; max-width: 420px; margin: 0 auto;">
             <p class="has-text-centered" style="grid-column: 1 / 4; font-weight: 600; color: #257942; margin-bottom: 0.2rem; font-size: 0.9rem;">
               &#10003;&nbsp;VLA Only
             </p>
