@@ -279,18 +279,16 @@
   <div class="container is-max-desktop">
     <div class="hero-body" style="text-align: center;">
 
-      <!-- TODO: Swap the two placeholder clips for real Peg Insert / Gear Mesh recordings
-           when they are available. -->
       <div data-sync-videos style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 720px; margin: 0 auto 2rem;">
         <div>
           <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-            <source src="static/videos/placeholder_peg_insert.mp4" type="video/mp4">
+            <source src="static/videos/peg_insert/success_1.mp4" type="video/mp4">
           </video>
           <p style="font-size: 0.85rem; font-weight: 600; color: #555; margin-top: 0.4rem;">Peg Insert</p>
         </div>
         <div>
           <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-            <source src="static/videos/placeholder_gear_mesh.mp4" type="video/mp4">
+            <source src="static/videos/gear_mesh/success_1.mp4" type="video/mp4">
           </video>
           <p style="font-size: 0.85rem; font-weight: 600; color: #555; margin-top: 0.4rem;">Gear Mesh</p>
         </div>
@@ -743,47 +741,44 @@
       <div class="column is-full">
         <h3 class="title is-4">VLA-Only vs. FIRe on the Real Robot</h3>
         <p>
-          For each task, the frozen VLA base policy alone (left) against the same VLA with FIRe's
-          force-aware residual (right).
+          For each task, five successful FIRe rollouts alongside a representative failure from the frozen
+          VLA base policy running alone.
         </p>
 
-        <!-- TODO: Replace the placeholder clips with real recordings: VLA-only failure clips on the
-             left panel, FIRe success clips on the right panel. Drop the files at
-             static/videos/peg_insert/ and static/videos/gear_mesh/ and update the <source> paths. -->
         <div style="margin-top: 2rem;">
           <p style="font-weight: 600; color: #555; margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
             Peg Insert
           </p>
-          <div data-sync-videos style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-            <div style="border: 1px solid #dbdbdb; border-radius: 8px; padding: 10px 10px 6px; background: #fafafa;">
-              <p class="has-text-centered" style="font-weight: 600; color: #cc0f35; margin-bottom: 0.6rem; font-size: 0.9rem;">
-                &#10007;&nbsp;VLA Only
-              </p>
-              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
-                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-                  <source src="static/videos/placeholder_peg_insert.mp4" type="video/mp4">
-                </video>
-                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-                  <source src="static/videos/placeholder_peg_insert.mp4" type="video/mp4">
-                </video>
-                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-                  <source src="static/videos/placeholder_peg_insert.mp4" type="video/mp4">
-                </video>
-              </div>
-            </div>
+          <div data-sync-videos style="display: grid; grid-template-columns: 5fr 1fr; gap: 14px;">
             <div style="border: 1px solid #dbdbdb; border-radius: 8px; padding: 10px 10px 6px; background: #fafafa;">
               <p class="has-text-centered" style="font-weight: 600; color: #257942; margin-bottom: 0.6rem; font-size: 0.9rem;">
                 &#10003;&nbsp;FIRe
               </p>
-              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+              <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;">
                 <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-                  <source src="static/videos/placeholder_peg_insert.mp4" type="video/mp4">
+                  <source src="static/videos/peg_insert/success_1.mp4" type="video/mp4">
                 </video>
                 <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-                  <source src="static/videos/placeholder_peg_insert.mp4" type="video/mp4">
+                  <source src="static/videos/peg_insert/success_2.mp4" type="video/mp4">
                 </video>
                 <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-                  <source src="static/videos/placeholder_peg_insert.mp4" type="video/mp4">
+                  <source src="static/videos/peg_insert/success_3.mp4" type="video/mp4">
+                </video>
+                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
+                  <source src="static/videos/peg_insert/success_4.mp4" type="video/mp4">
+                </video>
+                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
+                  <source src="static/videos/peg_insert/success_5.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
+            <div style="border: 1px solid #dbdbdb; border-radius: 8px; padding: 10px 10px 6px; background: #fafafa;">
+              <p class="has-text-centered" style="font-weight: 600; color: #cc0f35; margin-bottom: 0.6rem; font-size: 0.9rem;">
+                &#10007;&nbsp;VLA Only
+              </p>
+              <div style="display: grid; grid-template-columns: repeat(1, 1fr); gap: 6px;">
+                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
+                  <source src="static/videos/peg_insert/failure_1.mp4" type="video/mp4">
                 </video>
               </div>
             </div>
@@ -792,36 +787,36 @@
           <p style="font-weight: 600; color: #555; margin-bottom: 0.5rem; margin-top: 1.25rem; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
             Gear Mesh
           </p>
-          <div data-sync-videos style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-            <div style="border: 1px solid #dbdbdb; border-radius: 8px; padding: 10px 10px 6px; background: #fafafa;">
-              <p class="has-text-centered" style="font-weight: 600; color: #cc0f35; margin-bottom: 0.6rem; font-size: 0.9rem;">
-                &#10007;&nbsp;VLA Only
-              </p>
-              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
-                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-                  <source src="static/videos/placeholder_gear_mesh.mp4" type="video/mp4">
-                </video>
-                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-                  <source src="static/videos/placeholder_gear_mesh.mp4" type="video/mp4">
-                </video>
-                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-                  <source src="static/videos/placeholder_gear_mesh.mp4" type="video/mp4">
-                </video>
-              </div>
-            </div>
+          <div data-sync-videos style="display: grid; grid-template-columns: 5fr 1fr; gap: 14px;">
             <div style="border: 1px solid #dbdbdb; border-radius: 8px; padding: 10px 10px 6px; background: #fafafa;">
               <p class="has-text-centered" style="font-weight: 600; color: #257942; margin-bottom: 0.6rem; font-size: 0.9rem;">
                 &#10003;&nbsp;FIRe
               </p>
-              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+              <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px;">
                 <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-                  <source src="static/videos/placeholder_gear_mesh.mp4" type="video/mp4">
+                  <source src="static/videos/gear_mesh/success_1.mp4" type="video/mp4">
                 </video>
                 <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-                  <source src="static/videos/placeholder_gear_mesh.mp4" type="video/mp4">
+                  <source src="static/videos/gear_mesh/success_2.mp4" type="video/mp4">
                 </video>
                 <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
-                  <source src="static/videos/placeholder_gear_mesh.mp4" type="video/mp4">
+                  <source src="static/videos/gear_mesh/success_3.mp4" type="video/mp4">
+                </video>
+                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
+                  <source src="static/videos/gear_mesh/success_4.mp4" type="video/mp4">
+                </video>
+                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
+                  <source src="static/videos/gear_mesh/success_5.mp4" type="video/mp4">
+                </video>
+              </div>
+            </div>
+            <div style="border: 1px solid #dbdbdb; border-radius: 8px; padding: 10px 10px 6px; background: #fafafa;">
+              <p class="has-text-centered" style="font-weight: 600; color: #cc0f35; margin-bottom: 0.6rem; font-size: 0.9rem;">
+                &#10007;&nbsp;VLA Only
+              </p>
+              <div style="display: grid; grid-template-columns: repeat(1, 1fr); gap: 6px;">
+                <video autoplay muted loop playsinline preload="metadata" style="width:100%; border-radius:6px; aspect-ratio:9/16; object-fit:cover;">
+                  <source src="static/videos/gear_mesh/failure_1.mp4" type="video/mp4">
                 </video>
               </div>
             </div>
