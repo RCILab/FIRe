@@ -1,6 +1,0 @@
-[submodule "fire_lab/_isaaclab"]
-	path = fire_lab/_isaaclab
-	url = git@github.com:isaac-sim/IsaacLab.git
-[submodule "inverse3"]
-	path = fire_deploy/src/FIRe/lerobot_teleoperators/lerobot_teleoperator_inverse3
-	url = https://github.com/chohh7391/lerobot_teleoperator_inverse3.git

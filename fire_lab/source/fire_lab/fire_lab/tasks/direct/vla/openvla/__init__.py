@@ -1,1 +1,0 @@
-"""OpenVLA task registrations."""
