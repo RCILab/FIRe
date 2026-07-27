@@ -43,7 +43,6 @@
   <meta name="citation_author" content="Kim, Sanghyun">
   <meta name="citation_publication_date" content="2026">
   <meta name="citation_journal_title" content="IEEE Robotics and Automation Letters">
-  <!-- TODO: Put the paper PDF at static/pdfs/FIRe.pdf and uncomment the Paper button below -->
   <meta name="citation_pdf_url" content="https://rcilab.github.io/FIRe/static/pdfs/FIRe.pdf">
 
   <!-- Additional SEO -->
@@ -212,7 +211,7 @@
             <div class="column has-text-centered">
               <div class="publication-links">
 
-                <!-- TODO: Put the paper PDF at static/pdfs/FIRe.pdf, then uncomment
+                <!-- Paper PDF (docs/static/pdfs/FIRe.pdf) -->
                 <span class="link-block">
                   <a href="static/pdfs/FIRe.pdf" target="_blank" class="external-link button is-normal is-rounded is-dark">
                     <span class="icon">
@@ -221,9 +220,9 @@
                     <span>Paper</span>
                   </a>
                 </span>
-                -->
 
-                <!-- TODO: Add the arXiv link once available
+                <!-- arXiv: placeholder slot. Once the arXiv ID is live, replace this disabled
+                     button with the active one below and drop the placeholder styling.
                 <span class="link-block">
                   <a href="https://arxiv.org/abs/ARXIV_PAPER_ID" target="_blank" class="external-link button is-normal is-rounded is-dark">
                     <span class="icon">
@@ -233,6 +232,15 @@
                   </a>
                 </span>
                 -->
+                <span class="link-block">
+                  <a class="external-link button is-normal is-rounded is-dark" aria-disabled="true"
+                     style="pointer-events: none; opacity: 0.65;">
+                    <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                    </span>
+                    <span>arXiv (Coming Soon)</span>
+                  </a>
+                </span>
 
                 <!-- TODO: Add the YouTube link once available
                 <span class="link-block">
@@ -245,24 +253,23 @@
                 </span>
                 -->
 
-                <!-- Disabled placeholder until the paper is public; swap for the real
-                     Paper button (commented above) once the PDF/arXiv link exists. -->
-                <span class="link-block">
-                  <a class="external-link button is-normal is-rounded is-dark" aria-disabled="true"
-                     style="pointer-events: none; opacity: 0.65;">
-                    <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                    </span>
-                    <span>Paper (Coming Soon)</span>
-                  </a>
-                </span>
-
+                <!-- Code: placeholder until the repository is public; swap for the real link once available.
                 <span class="link-block">
                   <a href="https://github.com/RCILab/FIRe" target="_blank" class="external-link button is-normal is-rounded is-dark">
                     <span class="icon">
                       <i class="fab fa-github"></i>
                     </span>
                     <span>Code</span>
+                  </a>
+                </span>
+                -->
+                <span class="link-block">
+                  <a class="external-link button is-normal is-rounded is-dark" aria-disabled="true"
+                     style="pointer-events: none; opacity: 0.65;">
+                    <span class="icon">
+                      <i class="fab fa-github"></i>
+                    </span>
+                    <span>Code (Coming Soon)</span>
                   </a>
                 </span>
 
@@ -1083,6 +1090,21 @@
     }
   }
 </style>
+
+
+<!-- Acknowledgments -->
+<section class="section" id="acknowledgments">
+  <div class="container is-max-desktop content">
+    <h2 class="title is-3 has-text-centered">Acknowledgments</h2>
+    <div class="content has-text-justified">
+      <p>
+        This work was supported in part by NST (MSIT, Korea) under Grant GTL25042-000, in part by
+        MOTIE, Korea, under Grant RS-2025-25449039, and in part by KBSI (MSIT, Korea) under Grant
+        RS-2025-00564593.
+      </p>
+    </div>
+  </div>
+</section>
 
 
 <!--BibTex citation -->
