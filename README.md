@@ -21,7 +21,7 @@ contact-rich assembly succeeds.*
 
 ```bash
 git clone --recurse-submodules https://github.com/RCILab/FIRe.git
-cd FIRe
+cd FIRe 
 ```
 
 The two components have **separate, incompatible environments** — set up each in its own conda env,
