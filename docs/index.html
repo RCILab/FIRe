@@ -174,7 +174,7 @@
 
       <!-- Self-hosted so the overview video also plays on sandboxed anonymous-review
            mirrors, where a cross-origin YouTube iframe cannot initialize. -->
-      <video controls playsinline preload="metadata"
+      <video controls autoplay muted playsinline preload="metadata"
              poster="static/images/overview_poster.jpg"
              title="FIRe overview video"
              style="width: 100%; max-width: 860px; border: 0; border-radius: 8px; margin: 0 auto 2rem; display: block; background: #000;">
@@ -960,21 +960,21 @@
 
   </main>
 
-  <!-- Sandboxed review mirrors serve this page as a top-level document at origin "null"
-       with popups disabled, so target="_blank" is silently ignored there and the external
-       links appear dead. Same-tab navigation is still allowed, so fall back to it. This
-       also matters for the overview video: the mirror answers no Range request, which
-       leaves the inline player unseekable, and YouTube is the only way to skip ahead. -->
+  <!-- Anonymous review mirrors serve this page as a top-level document under a CSP
+       sandbox, at an opaque origin. A popup opened from there inherits the sandbox and
+       loads broken, so send those readers through a plain same-tab navigation instead,
+       which leaves the sandbox behind. Every other browser keeps its native new-tab
+       behaviour untouched. This matters for the overview video in particular: the mirror
+       answers every Range request with a 200 and no Accept-Ranges, so the inline player
+       reports an empty seekable range, and YouTube is the only way to skip ahead. -->
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      document.querySelectorAll('a[target="_blank"][href^="http"]').forEach(function (a) {
-        a.addEventListener('click', function (e) {
-          e.preventDefault();
-          var w = window.open(a.href, '_blank', 'noopener');
-          if (!w) window.location.href = a.href;
+    if (window.origin === 'null') {
+      document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('a[target="_blank"]').forEach(function (a) {
+          a.removeAttribute('target');
         });
       });
-    });
+    }
   </script>
 
   <!-- Fetch each video group only as it approaches the viewport, then keep its loops in
