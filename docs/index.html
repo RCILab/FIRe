@@ -960,6 +960,23 @@
 
   </main>
 
+  <!-- Sandboxed review mirrors serve this page as a top-level document at origin "null"
+       with popups disabled, so target="_blank" is silently ignored there and the external
+       links appear dead. Same-tab navigation is still allowed, so fall back to it. This
+       also matters for the overview video: the mirror answers no Range request, which
+       leaves the inline player unseekable, and YouTube is the only way to skip ahead. -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('a[target="_blank"][href^="http"]').forEach(function (a) {
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          var w = window.open(a.href, '_blank', 'noopener');
+          if (!w) window.location.href = a.href;
+        });
+      });
+    });
+  </script>
+
   <!-- Fetch each video group only as it approaches the viewport, then keep its loops in
        lockstep: start together once every clip is buffered, and correct drift against the
        group's first video. The clips carry preload="none" and no autoplay attribute, so
