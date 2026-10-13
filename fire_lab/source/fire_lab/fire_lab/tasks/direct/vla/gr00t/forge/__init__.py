@@ -40,6 +40,35 @@ gym.register(
     },
 )
 
+################## Baseline / ablation variants (RA-L revision) ##################
+# FireLab-RL-FIReRew-Forge-<Task>-Direct-v1: from-scratch RL with the FIRe reward (no VLA)
+# FireLab-VLA-Gr00t-Forge-<Task>-<Variant>-Direct-v1: see forge_gr00t_ablation_cfg.py
+_TASKS = {
+    "PegInsert": ("PegInsert", "peg_insert"),
+    "GearMesh": ("GearMesh", "gear_mesh"),
+    "NutThread": ("NutThread", "nut_thread"),
+}
+for _task, (_cfg_name, _agent_name) in _TASKS.items():
+    gym.register(
+        id=f"FireLab-RL-FIReRew-Forge-{_task}-Direct-v1",
+        entry_point=f"{__name__}.forge_gr00t_env:ForgeGr00tEnv",
+        disable_env_checker=True,
+        kwargs={
+            "env_cfg_entry_point": f"{__name__}.forge_gr00t_ablation_cfg:ForgeTask{_cfg_name}Gr00tNoVlaCfg",
+            "rl_games_cfg_entry_point": f"{agents.__name__}:rl_games_ppo_cfg_{_agent_name}.yaml",
+        },
+    )
+    for _variant in ["NoForce", "ObsOnly", "RewOnly", "PenaltyOnly", "ShapingOnly"]:
+        gym.register(
+            id=f"FireLab-VLA-Gr00t-Forge-{_task}-{_variant}-Direct-v1",
+            entry_point=f"{__name__}.forge_gr00t_env:ForgeGr00tEnv",
+            disable_env_checker=True,
+            kwargs={
+                "env_cfg_entry_point": f"{__name__}.forge_gr00t_ablation_cfg:ForgeTask{_cfg_name}Gr00t{_variant}Cfg",
+                "rl_games_cfg_entry_point": f"{agents.__name__}:rl_games_ppo_cfg_{_agent_name}.yaml",
+            },
+        )
+
 ################## GR00T Demo Save Env ##################
 gym.register(
     id="FireLab-VLA-Gr00t-Forge-PegInsert-Demo-Save-Direct-v0",

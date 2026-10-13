@@ -53,12 +53,19 @@ class DirectRLVlaEnv(DirectRLEnv):
 
         defaults = self._DEFAULTS[self.vla_model]
         self.vla_chunk_size = getattr(cfg, "vla_chunk_size", defaults["chunk_size"])
-        client_kwargs = {
-            "host": getattr(cfg, "vla_host", defaults["host"]),
-            "port": getattr(cfg, "vla_port", defaults["port"]),
-        }
-        self.vla_policy = defaults["client_cls"](**client_kwargs)
-        print(f"Initialize {self.vla_model} Client Node")
+        # use_vla=False keeps the environment identical but replaces the VLA base action with zeros
+        # (from-scratch RL baseline with the same observation, reward, and action processing).
+        self.use_vla = getattr(cfg, "use_vla", True)
+        if self.use_vla:
+            client_kwargs = {
+                "host": getattr(cfg, "vla_host", defaults["host"]),
+                "port": getattr(cfg, "vla_port", defaults["port"]),
+            }
+            self.vla_policy = defaults["client_cls"](**client_kwargs)
+            print(f"Initialize {self.vla_model} Client Node")
+        else:
+            self.vla_policy = None
+            print("VLA disabled: base action is zero")
 
         self.vla_actions: Dict[str, Any] | None = None
         self.processed_vla_actions: torch.Tensor | None = None
@@ -80,8 +87,11 @@ class DirectRLVlaEnv(DirectRLEnv):
             while SimulationManager.assets_loading():
                 self.sim.render()
 
-        self.vla_actions = self.vla_policy.get_action_sync(self._get_vla_observations())
-        self.processed_vla_actions = self._parse_vla_actions(self.vla_actions)
+        if self.use_vla:
+            self.vla_actions = self.vla_policy.get_action_sync(self._get_vla_observations())
+            self.processed_vla_actions = self._parse_vla_actions(self.vla_actions)
+        else:
+            self.processed_vla_actions = self._zero_vla_actions()
 
         return self._get_observations(), self.extras
 
@@ -89,7 +99,9 @@ class DirectRLVlaEnv(DirectRLEnv):
         t = int(self.episode_length_buf[0].item())
         chunk_idx = t % self.vla_chunk_size
 
-        if chunk_idx == 0:
+        if not self.use_vla:
+            pass
+        elif chunk_idx == 0:
             if t != 0:
                 try:
                     self.vla_actions = self.vla_policy.get_result()

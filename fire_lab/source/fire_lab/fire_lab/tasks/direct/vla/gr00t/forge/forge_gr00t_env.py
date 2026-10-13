@@ -44,9 +44,12 @@ class ForgeGr00tEnv(ForgeEnv):
             self._small_gear_asset = Articulation(self.cfg_task.small_gear_cfg)
             self._large_gear_asset = Articulation(self.cfg_task.large_gear_cfg)
 
-        self._wrist_camera = TiledCamera(self.cfg.wrist_camera)
-        self._left_camera = TiledCamera(self.cfg.left_camera)
-        self._right_camera = TiledCamera(self.cfg.right_camera)
+        # Cameras only feed the VLA; skip them when the VLA is disabled.
+        use_cameras = getattr(self.cfg, "use_vla", True)
+        if use_cameras:
+            self._wrist_camera = TiledCamera(self.cfg.wrist_camera)
+            self._left_camera = TiledCamera(self.cfg.left_camera)
+            self._right_camera = TiledCamera(self.cfg.right_camera)
 
         self.scene.clone_environments(copy_from_source=False)
         if self.device == "cpu":
@@ -60,9 +63,10 @@ class ForgeGr00tEnv(ForgeEnv):
             self.scene.articulations["small_gear"] = self._small_gear_asset
             self.scene.articulations["large_gear"] = self._large_gear_asset
 
-        self.scene.sensors["wrist_camera"] = self._wrist_camera
-        self.scene.sensors["left_camera"] = self._left_camera
-        self.scene.sensors["right_camera"] = self._right_camera
+        if use_cameras:
+            self.scene.sensors["wrist_camera"] = self._wrist_camera
+            self.scene.sensors["left_camera"] = self._left_camera
+            self.scene.sensors["right_camera"] = self._right_camera
 
         # add lights
         light_cfg = sim_utils.DomeLightCfg(intensity=2000.0, color=(0.75, 0.75, 0.75))
@@ -158,11 +162,18 @@ class ForgeGr00tEnv(ForgeEnv):
         rew_buf += r_penalty
         rew_buf += r_shaping
 
-        wandb.log({
-            "success rate": curr_successes.float().mean() * 100,
-            "r_penalty": r_penalty.float().mean(),
-            "r_shaping": r_shaping.float().mean(),
-        })
+        # Episode-end success logging, same metric as the Factory/FORGE baselines.
+        self._log_factory_metrics(
+            {"r_s": r_s, "r_penalty": r_penalty, "r_shaping": r_shaping, "contact_force": contact_force},
+            curr_successes,
+        )
+
+        if wandb.run is not None:
+            wandb.log({
+                "success rate": curr_successes.float().mean() * 100,
+                "r_penalty": r_penalty.float().mean(),
+                "r_shaping": r_shaping.float().mean(),
+            })
         # print(f"======= {self.episode_length_buf[0]} / {self.max_episode_length} =======")
         # print(f"success rate: {curr_successes.float().mean()*100}%")
 

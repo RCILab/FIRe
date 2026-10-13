@@ -30,6 +30,13 @@ class StepResult:
     model_obs_array: Optional[np.ndarray] = None
     metadata: Optional[dict] = None
     processed_action: Optional[dict] = None
+    # Per-component breakdown of policy_action for logging (None = not applicable):
+    # residual_action is the RL policy output (as read from the inference process,
+    # i.e. after the backend's own action clipping), vla_action the VLA chunk row
+    # used at this step and vla_chunk_idx its row index.
+    residual_action: Optional[np.ndarray] = None
+    vla_action: Optional[np.ndarray] = None
+    vla_chunk_idx: Optional[int] = None
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -197,6 +204,7 @@ class LiveInferenceStrategy(ControlStrategy):
             obs_dict=self._pending_obs_dict,
             action_dict=self._buffered_action,
             policy_action=arm_action,
+            residual_action=arm_action,
         )
 
     def after_action_sent(self, step_idx: int, result: StepResult) -> StepResult:
@@ -282,7 +290,8 @@ class LiveInferenceWithVLAStrategy(LiveInferenceStrategy):
                 print(f"[WARN] VLA request skipped: {e}")
 
         rl_action = self._wait_inference()
-        combined = (rl_action + self._vla_chunk[chunk_idx]).astype(np.float32)
+        vla_action = self._vla_chunk[chunk_idx]
+        combined = (rl_action + vla_action).astype(np.float32)
         # combined = self._vla_chunk[chunk_idx]
         # combined = rl_action
 
@@ -299,6 +308,9 @@ class LiveInferenceWithVLAStrategy(LiveInferenceStrategy):
             obs_dict=self._pending_obs_dict,
             action_dict=self._buffered_action,
             policy_action=combined,
+            residual_action=rl_action,
+            vla_action=vla_action,
+            vla_chunk_idx=chunk_idx,
         )
 
 
@@ -407,6 +419,8 @@ class VLAOnlyStrategy(ControlStrategy):
             obs_dict=self._robot.get_observation(),
             action_dict=self._buffered_action,
             policy_action=action,
+            vla_action=action,
+            vla_chunk_idx=chunk_idx,
         )
 
 

@@ -386,6 +386,8 @@ class FactoryEnv(DirectRLEnv):
         # Only log episode success rates at the end of an episode.
         if torch.any(self.reset_buf):
             self.extras["successes"] = torch.count_nonzero(curr_successes) / self.num_envs
+            # Per-env success at the end of the episode, read by the evaluation script.
+            self.last_episode_successes = curr_successes.clone()
 
         # Get the time at which an episode first succeeds.
         first_success = torch.logical_and(curr_successes, torch.logical_not(self.ep_succeeded))

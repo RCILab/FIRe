@@ -81,6 +81,10 @@ class Task(ABC):
     def get_log(self) -> Dict[str, np.ndarray]:
         raise NotImplementedError
 
+    def get_extra_log(self) -> Dict[str, Any]:
+        """Extra per-step CSV columns outside log_features (array -> key_i, scalar -> key)."""
+        return {}
+
     def get_reward(self) -> float:
         return 0.0
 

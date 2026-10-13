@@ -57,6 +57,8 @@ class ForgeGr00tEnvCfg(ForgeEnvCfg):
     vla_host: str = "localhost"
     vla_port: int = 5555
     vla_chunk_size: int = 16
+    # False: zero base action and no cameras (from-scratch RL with the FIRe reward, "RL FIRe-rew").
+    use_vla: bool = True
 
     scene: InteractiveSceneCfg = InteractiveSceneCfg(num_envs=64, env_spacing=2.0)
     task: ForgeGr00tTask = ForgeGr00tTask()

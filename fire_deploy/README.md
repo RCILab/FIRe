@@ -82,7 +82,9 @@ in place of a local `--checkpoint <CHECKPOINT_PATH>` (works for both `play.py` a
 | `--episode_length` | Max steps per episode (logging only; default 88). |
 | `--device` | Torch device (default `cuda:0`). |
 | `--use_sim_time` | Use ROS simulated time. |
-| `--save_path` | Dump a per-step observation CSV. |
+| `--save_path` | Dump a per-step observation CSV (`collected_data_<timestamp>.csv`) and append a row to `episodes.csv` in the same directory. |
+| `--ask_success` | After the episode, prompt for a 0/1 success label + optional note, stored in `<save_path>/episodes.csv` (requires `--save_path`). |
+| `--force_threshold` | Fixed force threshold [N] for `forge-*` tasks (default: sampled U[5, 10] per episode). |
 | `--replay <CSV>` + `--raw`/`--pose` | Replay a recorded CSV (obs → inference, or target pose → direct send). |
 
 ### `record.py`

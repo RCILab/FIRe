@@ -50,7 +50,7 @@ def run_control_loop(
 
             # 3. Record via the existing Logger (e.g. CSV)
             if logger is not None:
-                logger.record(result)
+                logger.record(result, step_idx=step_idx, t_wall=t_start)
 
             # 4. Record the LeRobot/GR00T/Pi0 dataset (core part)
             if recorder is not None:                

@@ -36,9 +36,12 @@ Communication: shared torch tensors + RawValue spin-flags
 from __future__ import annotations
 
 import argparse
+import csv
 import ctypes
+import datetime
+import os
 from multiprocessing import RawValue
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -78,6 +81,15 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--episode_length", type=int, default=88, help="Max steps per episode (for logging only)")
     p.add_argument("--replay",         default=None, metavar="CSV")
     p.add_argument("--save_path",      default=None)
+    p.add_argument(
+        "--ask_success", action="store_true",
+        help="After the episode, ask the operator for a 0/1 success label (+ optional note) "
+             "and store it in <save_path>/episodes.csv. Requires --save_path.",
+    )
+    p.add_argument(
+        "--force_threshold", type=float, default=None,
+        help="Fixed force threshold [N] for forge tasks. Default: sample U[5, 10] per episode.",
+    )
     p.add_argument("--use_cameras",    action="store_true")
     p.add_argument("--use_ft_sensor",  action="store_true")
     p.add_argument("--use_sim_time",   action="store_true")
@@ -98,6 +110,8 @@ def parse_args() -> argparse.Namespace:
         p.error("--raw / --pose requires --replay")
     if args.replay and not (args.raw or args.pose):
         p.error("--replay requires --raw or --pose")
+    if args.ask_success and not args.save_path:
+        p.error("--ask_success requires --save_path")
 
     no_ckpt = args.checkpoint is None and args.hf_checkpoint is None
     if no_ckpt:
@@ -109,6 +123,47 @@ def parse_args() -> argparse.Namespace:
                 "or --vla alone for a VLA-only run with no RL policy."
             )
     return args
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Episode index (<save_path>/episodes.csv)
+# ──────────────────────────────────────────────────────────────────────────────
+
+EPISODE_INDEX_FILE = "episodes.csv"
+EPISODE_INDEX_COLUMNS = [
+    "csv_file", "label", "note", "task", "vla", "checkpoint",
+    "episode_length", "control_hz", "start_time", "end_time",
+]
+
+
+def ask_episode_label() -> Tuple[str, str]:
+    """Prompt the operator for a 0/1 success label and an optional note.
+
+    Ctrl+C / EOF leaves the remaining fields empty instead of aborting cleanup.
+    """
+    label, note = "", ""
+    try:
+        while True:
+            value = input("[INPUT] Episode success? 0 = fail, 1 = success: ").strip()
+            if value in {"0", "1"}:
+                label = value
+                break
+            print("[WARN] Please enter 0 or 1.")
+        note = input("[INPUT] Optional note (Enter to skip): ").strip()
+    except (EOFError, KeyboardInterrupt):
+        print("\n[WARN] Label prompt aborted; leaving the remaining fields empty.")
+    return label, note
+
+
+def append_episode_row(save_dir: str, row: dict) -> None:
+    path = os.path.join(save_dir, EPISODE_INDEX_FILE)
+    write_header = not os.path.exists(path) or os.path.getsize(path) == 0
+    with open(path, "a", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=EPISODE_INDEX_COLUMNS)
+        if write_header:
+            writer.writeheader()
+        writer.writerow(row)
+    print(f"[INFO] Episode row appended → {path} (label={row['label'] or '<empty>'})")
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -141,6 +196,14 @@ def main() -> None:
         use_ft_sensor=args.use_ft_sensor,
     )
     robot = FR3Robot(config, task_name=args.task)
+
+    if args.force_threshold is not None:
+        # Must be set before robot.connect(), which calls task.reset().
+        if not hasattr(robot.task, "force_threshold_override"):
+            print(f"[ERROR] --force_threshold is not supported by task '{args.task}' (forge-* only).")
+            return
+        robot.task.force_threshold_override = float(args.force_threshold)
+        print(f"[INFO] Using fixed force threshold: {args.force_threshold:.3f} N")
 
     obs_features    = robot.task.observation_features
     log_features    = robot.task.log_features
@@ -264,16 +327,40 @@ def main() -> None:
     logger = StepLogger(robot, obs_features, log_features) if args.save_path else None
 
     # ── Control loop ──────────────────────────────────────────────────────────
+    start_time = datetime.datetime.now()
+    loop_finished = False
     try:
         run_control_loop(robot, strategy, control_hz=args.control_hz, max_steps=args.episode_length, logger=logger)
+        loop_finished = True  # also True after Ctrl+C (handled inside the loop)
     finally:
-        if logger:
-            logger.save(args.save_path)
-        if infer_handle:
-            infer_handle.shutdown()
-        cv2.destroyAllWindows()
-        robot.disconnect()
-        print("[INFO] Robot disconnected.")
+        end_time = datetime.datetime.now()
+        try:
+            csv_path = logger.save(args.save_path) if logger else None
+            if csv_path is not None:
+                label, note = "", ""
+                if args.ask_success and loop_finished:
+                    # Episode is done — tell the VLA before asking the operator
+                    # (same ordering as record.py; idempotent with disconnect()).
+                    robot.send_success_signal()
+                    label, note = ask_episode_label()
+                append_episode_row(args.save_path, {
+                    "csv_file": os.path.basename(csv_path),
+                    "label": label,
+                    "note": note,
+                    "task": args.task,
+                    "vla": args.vla or "",
+                    "checkpoint": args.checkpoint or args.hf_checkpoint or "",
+                    "episode_length": args.episode_length,
+                    "control_hz": args.control_hz,
+                    "start_time": start_time.isoformat(timespec="seconds"),
+                    "end_time": end_time.isoformat(timespec="seconds"),
+                })
+        finally:
+            if infer_handle:
+                infer_handle.shutdown()
+            cv2.destroyAllWindows()
+            robot.disconnect()
+            print("[INFO] Robot disconnected.")
 
 
 if __name__ == "__main__":

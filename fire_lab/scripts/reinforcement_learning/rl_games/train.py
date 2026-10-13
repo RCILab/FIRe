@@ -44,6 +44,12 @@ parser.add_argument(
 parser.add_argument("--export_io_descriptors", action="store_true", default=False, help="Export IO descriptors.")
 parser.add_argument("--huggingface", action="store_true", default=False, help="Upload logs to Hugging Face and remove local logs after training.")
 parser.add_argument("--repo_id", type=str, default=None, help="Hugging Repository Name for uploading")
+parser.add_argument(
+    "--run_name",
+    type=str,
+    default=None,
+    help="Sub-directory under the experiment log directory (e.g. 'seed1'), so repeated runs do not overwrite each other.",
+)
 
 # append AppLauncher cli args
 AppLauncher.add_app_launcher_args(parser)
@@ -154,6 +160,8 @@ def main(env_cfg: ManagerBasedRLEnvCfg | DirectRLEnvCfg | DirectMARLEnvCfg, agen
     print(f"[INFO] Logging experiment in directory: {log_root_path}")
     # specify directory for logging runs
     log_dir = agent_cfg["params"]["config"].get("full_experiment_name", datetime.now().strftime("%Y-%m-%d_%H-%M-%S"))
+    if args_cli.run_name is not None:
+        log_dir = os.path.join(log_dir, args_cli.run_name)
 
     full_log_path = os.path.join(log_root_path, log_dir)
     if args_cli.huggingface:

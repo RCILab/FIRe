@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Dict, Optional, Tuple
+from typing import Any, Dict, Optional, Tuple
 from ..factory import Factory
 from .forge_cfg import (
     ForgeTaskPegInsertCfg,
@@ -13,6 +13,9 @@ from lerobot_robot_fr3.utils.rotation_utils import quat_apply, quat_from_euler_x
 class Forge(Factory):
     def __init__(self, name: str):
         super().__init__(name)
+        # When set (e.g. play.py --force_threshold), reset() uses this value as the
+        # contact-penalty / force threshold instead of sampling U[range] per episode.
+        self.force_threshold_override: Optional[float] = None
     
     def create_config(self) -> None:
         if self.name == "peg_insert":
@@ -79,12 +82,17 @@ class Forge(Factory):
         # elimate randomness of ema_factor
         self.ema_factor = self.ctrl_cfg.ema_factor
 
-        contact_rand = np.random.rand()
-        contact_lower, contact_upper = self.task_cfg.contact_penalty_threshold_range
-        self.contact_penalty_thresholds = np.array(
-            [contact_lower + contact_rand * (contact_upper - contact_lower)],
-            dtype=np.float32
-        )
+        if self.force_threshold_override is not None:
+            self.contact_penalty_thresholds = np.array(
+                [self.force_threshold_override], dtype=np.float32
+            )
+        else:
+            contact_rand = np.random.rand()
+            contact_lower, contact_upper = self.task_cfg.contact_penalty_threshold_range
+            self.contact_penalty_thresholds = np.array(
+                [contact_lower + contact_rand * (contact_upper - contact_lower)],
+                dtype=np.float32
+            )
 
         self.force_sensor_world_smooth[:] = 0.0
 
@@ -135,6 +143,16 @@ class Forge(Factory):
         log = super().get_log()
         log["ft_force"] = self.force
         return log
+
+    def get_extra_log(self) -> Dict[str, Any]:
+        # Base-frame wrench from the latest compute_ft_force() (same sample as ft_force).
+        # Torque is about the sensor origin, axes rotated into the base frame.
+        return {
+            "ft_force_raw": self.force_sensor_world[0:3],
+            "ft_torque_raw": self.force_sensor_world[3:6],
+            "ft_torque": self.force_sensor_world_smooth[3:6],
+            "force_threshold": float(self.contact_penalty_thresholds[0]),
+        }
     
     @property
     def observation_features(self) -> Dict[str, Tuple[int, ...]]:
