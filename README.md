@@ -1,3 +1,5 @@
+> **`revision-ral` branch:** 공저자용 revision 작업 안내(비공개 Google Drive 연동)는 [REVISION.md](REVISION.md)에 있다.
+
 # FIRe — Force-Informed Residual Policy
 
 FIRe improves a **Vision-Language-Action (VLA)** model at **contact-rich robotic manipulation**
