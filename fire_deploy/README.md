@@ -38,14 +38,17 @@ pip install -r requirements.txt
 The vision (camera) server now runs in the same `fire` env — `requirements.txt` installs
 `src/FIRe/vision_server` (with `pyrealsense2`), so no separate env is needed.
 
-- install ros2 based controller: (https://github.com/chohh7391/cho_robot_project)
+- install the ROS 2 side: the controllers' core, [cho_robot_project](https://github.com/chohh7391/cho_robot_project),
+  and this repository's [`ros2_ws`](ros2_ws/README.md) on top of it (the FR3 with the Bota FT sensor, the
+  FORGE task trees)
 
 # How to run
 
-- bringup vla controller
+- bringup the action-chunk controller on the FR3 with the FT sensor, and the sensor's driver
 ```bash
-source ~/ros2_ws/install/setup.bash
-ros2 launch cho_franka_bringup bringup_gazebo_robot.launch.py vla:=true control_mode:=torque
+source ~/FIRe/fire_deploy/ros2_ws/install/setup.bash
+ros2 launch fire_bringup bringup_real_robot.launch.py control_mode:=torque action_chunk:=true
+ros2 launch fire_bringup bota_ft_sensor.launch.py
 ```
 
 - vision server

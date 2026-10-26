@@ -1,0 +1,14 @@
+# The core this workspace builds on, imported into a core workspace of its own
+# (README.md, Build):
+#
+#   vcs import --recursive src < fire.repos
+#
+# version is a core tag, the core this workspace's tests passed on. v0.2.0 is
+# the first with the Franka bringups' payload_file, ee_connection_xacro and
+# ft_link, which fire_bringup sets. The url is https, so a clone needs no
+# GitHub SSH key.
+repositories:
+  cho_robot_project:
+    type: git
+    url: https://github.com/chohh7391/cho_robot_project.git
+    version: v0.2.0

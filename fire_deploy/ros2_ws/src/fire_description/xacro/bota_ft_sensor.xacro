@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<!-- The Bota SensONE between the FR3's flange and its hand, for the core's
+     Franka xacro (cho_description_franka robots/common/franka_robot.xacro):
+     a bringup given ee_connection_xacro:=<this file> and
+     special_connection:=bota_ft_sensor_wrench calls ee_connection() after the
+     arm, and the hand hangs off the sensor's wrench frame, 35 mm above the
+     flange. urdf/fr3_with_ft_sensor/ is the same robot as one file, for
+     MuJoCo and Isaac. -->
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:macro name="ee_connection" params="arm_prefix robot_type">
+    <!-- Mounting part bolted to the arm flange (link8) -->
+    <joint name="robot_mounting_link_to_bota_ft_sensor" type="fixed">
+      <parent link="${arm_prefix}${robot_type}_link8"/>
+      <child link="bota_ft_sensor_mounting"/>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+    </joint>
+    <link name="bota_ft_sensor_mounting">
+      <inertial>
+        <origin rpy="0 0 0" xyz="-0.00011559 0.00060052 0.010067"/>
+        <mass value="0.15393"/>
+        <inertia ixx="4.907E-05" ixy="3.2541E-08" ixz="-1.0415E-07" iyy="5.5735E-05" iyz="1.3709E-07" izz="9.0228E-05"/>
+      </inertial>
+      <visual>
+        <origin rpy="0 0 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="package://fire_description/meshes/ft_sensor/mounting.stl"/>
+        </geometry>
+        <material name="bota_ft_material">
+          <color rgba="0.6902 0.61176 0.52941 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.011"/>
+        <geometry><cylinder length="0.028" radius="0.035"/></geometry>
+      </collision>
+      <collision>
+        <origin rpy="1.57 0 0" xyz="0 0.051 0.0115"/>
+        <geometry><cylinder length="0.032" radius="0.0065"/></geometry>
+      </collision>
+      <collision>
+        <origin rpy="0 0 0" xyz="0 0 0.03"/>
+        <geometry><cylinder length="0.01" radius="0.0315"/></geometry>
+      </collision>
+    </link>
+
+    <!-- Wrench (force/torque measurement) frame, 35 mm above the mounting base -->
+    <joint name="bota_ft_sensor_mounting_to_wrench" type="fixed">
+      <origin rpy="0 0 0" xyz="0 0 0.035"/>
+      <parent link="bota_ft_sensor_mounting"/>
+      <child link="bota_ft_sensor_wrench"/>
+    </joint>
+    <link name="bota_ft_sensor_wrench">
+      <inertial>
+        <origin rpy="0 0 0" xyz="-0.00018335 -3.3341E-07 -0.0070612"/>
+        <mass value="0.08253"/>
+        <inertia ixx="2.2674E-05" ixy="-3.9222E-12" ixz="4.8952E-08" iyy="2.2294E-05" iyz="4.0972E-11" izz="4.0919E-05"/>
+      </inertial>
+    </link>
+
+    <!-- Internal mechanical reference frames -->
+    <joint name="bota_ft_sensor_mounting_to_mech1" type="fixed">
+      <origin rpy="1.5625 0 -1.5708" xyz="-0.032879 0 0.0105"/>
+      <parent link="bota_ft_sensor_mounting"/>
+      <child link="bota_ft_sensor_mech1"/>
+    </joint>
+    <link name="bota_ft_sensor_mech1"/>
+    <joint name="bota_ft_sensor_mounting_to_mech2" type="fixed">
+      <origin rpy="1.5708 0 0" xyz="0 -0.032879 0.0105"/>
+      <parent link="bota_ft_sensor_mounting"/>
+      <child link="bota_ft_sensor_mech2"/>
+    </joint>
+    <link name="bota_ft_sensor_mech2"/>
+    <joint name="bota_ft_sensor_mounting_to_mech3" type="fixed">
+      <origin rpy="1.5708 0 1.5708" xyz="0.032879 0 0.0105"/>
+      <parent link="bota_ft_sensor_mounting"/>
+      <child link="bota_ft_sensor_mech3"/>
+    </joint>
+    <link name="bota_ft_sensor_mech3"/>
+  </xacro:macro>
+</robot>

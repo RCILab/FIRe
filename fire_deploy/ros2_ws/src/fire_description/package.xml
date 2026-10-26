@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>fire_description</name>
+  <version>0.1.0</version>
+  <description>The Franka FR3 with the Bota SensONE between its flange and its hand: the core Franka xacro's ee_connection() for it, the robot as one URDF and MuJoCo model, and its Isaac USD.</description>
+  <maintainer email="chohh7391@gmail.com">Hyunho Cho</maintainer>
+  <license>Apache-2.0</license>
+  <!-- The SensONE mounting mesh (meshes/ft_sensor/); see meshes/ft_sensor/LICENSE. -->
+  <license file="meshes/ft_sensor/LICENSE">BSD-3-Clause with Attribution Requirement (Bota Systems AG)</license>
+  <!-- xml/fr3_with_ft_sensor/ is adapted from MuJoCo Menagerie franka_fr3; see its LICENSE. -->
+  <license file="xml/fr3_with_ft_sensor/LICENSE">Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <build_depend>cho_description_franka</build_depend>
+  <exec_depend>cho_description_franka</exec_depend>
+
+  <test_depend>ament_cmake_pytest</test_depend>
+  <test_depend>python3-pytest</test_depend>
+  <test_depend>xacro</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

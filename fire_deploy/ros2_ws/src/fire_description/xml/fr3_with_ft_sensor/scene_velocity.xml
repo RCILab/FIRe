@@ -1,0 +1,6 @@
+<mujoco model="fr3 scene (velocity)">
+  <!-- Robot + world (scene.xml) with velocity-control actuators.
+       Loaded automatically when control_mode:=velocity. -->
+  <include file="scene.xml"/>
+  <include file="actuators_velocity.xml"/>
+</mujoco>

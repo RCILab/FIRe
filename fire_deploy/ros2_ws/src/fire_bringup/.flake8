@@ -1,0 +1,13 @@
+# flake8 rules for `colcon test` (CMakeLists.txt points ament_cmake_flake8 at
+# this file) and for a plain `flake8` run here.
+#
+# 120 columns, the limit of every Python package here, and the rules of the
+# optional flake8 plugins pinned off so the verdict does not depend on which
+# plugins a machine has: a ROS 2 development machine has
+# python3-flake8-{blind-except,builtins,class-newline,comprehensions,deprecated,
+# docstrings,import-order,quotes}, and this code is written to pycodestyle +
+# pyflakes only. A builtins, B90 blind-except, C4 comprehensions, C81 commas,
+# CNL class-newline, D docstrings and deprecated, I import-order, Q quotes.
+[flake8]
+extend-ignore = A,B90,C4,C81,CNL,D,I,Q
+max-line-length = 120

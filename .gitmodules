@@ -4,3 +4,9 @@
 [submodule "inverse3"]
 	path = fire_deploy/src/FIRe/lerobot_teleoperators/lerobot_teleoperator_inverse3
 	url = https://github.com/chohh7391/lerobot_teleoperator_inverse3.git
+[submodule "fire_deploy/ros2_ws/extern/bota_driver_ros2"]
+	path = fire_deploy/ros2_ws/extern/bota_driver_ros2
+	url = https://gitlab.com/botasys/drivers/bota_driver_ros2.git
+[submodule "fire_deploy/ros2_ws/extern/bota_driver_ros2_example"]
+	path = fire_deploy/ros2_ws/extern/bota_driver_ros2_example
+	url = https://gitlab.com/botasys/drivers/bota_driver_ros2_example.git

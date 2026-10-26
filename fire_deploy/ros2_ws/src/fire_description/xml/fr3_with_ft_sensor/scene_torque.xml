@@ -1,0 +1,6 @@
+<mujoco model="fr3 scene (torque)">
+  <!-- Robot + world (scene.xml) with torque-control actuators.
+       Loaded automatically when control_mode:=torque. -->
+  <include file="scene.xml"/>
+  <include file="actuators_torque.xml"/>
+</mujoco>

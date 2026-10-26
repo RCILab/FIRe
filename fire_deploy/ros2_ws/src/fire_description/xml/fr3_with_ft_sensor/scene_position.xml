@@ -1,0 +1,6 @@
+<mujoco model="fr3 scene (position)">
+  <!-- Robot + world (scene.xml) with position-control actuators.
+       Loaded automatically when control_mode:=position. -->
+  <include file="scene.xml"/>
+  <include file="actuators_position.xml"/>
+</mujoco>

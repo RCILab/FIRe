@@ -1,0 +1,11 @@
+# The Bota FT sensor with the Franka Hand: the end-effector payload of the FR3
+# that fire_description mounts the sensor on, which every launch here hands the
+# core bringup as payload_file:=. On the real robot Desk's end-effector load
+# has to match it.
+/**:
+  ros__parameters:
+    mass: 0.97
+    center_of_mass: [-0.00753, 0.0, 0.05325]
+    load_inertia: [0.001506, 0.0, 0.0,
+                   0.0, 0.003023, 0.0,
+                   0.0, 0.0, 0.001865]
