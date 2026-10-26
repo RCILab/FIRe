@@ -11,4 +11,4 @@ repositories:
   cho_robot_project:
     type: git
     url: https://github.com/chohh7391/cho_robot_project.git
-    version: v0.2.0
+    version: v0.2.1
