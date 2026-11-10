@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FIRe: Force-Informed Residual Policy for Contact-Rich Manipulation with Vision-Language-Action Models</title>
+  <meta name="description" content="FIRe augments a frozen VLA with a force-aware residual RL policy, trained in simulation with only a sparse success reward and a task-agnostic force-aware reward, and improves real-robot contact-rich assembly by up to 90 percentage points.">
+  <meta name="author" content="Anonymous Authors">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="FIRe: Force-Informed Residual Policy for Contact-Rich Manipulation with Vision-Language-Action Models">
+  <meta property="og:description" content="A force-aware residual policy corrects a frozen VLA at the control rate for contact-rich assembly.">
+  <meta name="theme-color" content="#121519">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23e35b4f' stroke='%237a1f19' stroke-width='2.5'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>MathJax = { tex: { inlineMath: [['\\(', '\\)']] } };</script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  <style>
+    :root {
+      --paper: #ffffff;
+      --band: #f3f4f7;
+      --ink: #1a1d23;
+      --muted: #596170;
+      --rule: #dde0e6;
+      --accent: #c0392b;
+      --accent-deep: #7a1f19;
+      --accent-tint: #fbeeec;
+      --ok: #23874a;
+      --ok-tint: #e5f4ea;
+      --fail: #b8372f;
+      --fail-tint: #f8e6e4;
+      --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --max: 980px;
+      --wide: 1160px;
+      --text: 980px;
+      --gut: clamp(20px, 4vw, 40px);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 72px; -webkit-text-size-adjust: 100%; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+    img, video { display: block; max-width: 100%; height: auto; }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:hover { color: var(--accent-deep); }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+    ::selection { background: #f6d6d2; }
+
+    .wrap { width: min(100% - 2 * var(--gut), var(--max)); margin-inline: auto; }
+    .text { max-width: var(--text); }
+    .sec { padding-block: clamp(56px, 8vw, 96px); }
+    .sec--band { background: var(--band); }
+    .sec--tight { padding-top: 0; }
+    h1, h2, h3 { margin: 0; line-height: 1.15; }
+    h2 { font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 700; letter-spacing: -0.022em; max-width: none; text-wrap: balance; }
+    h3 { font-size: 1.15rem; font-weight: 650; letter-spacing: -0.01em; margin-top: 44px; margin-bottom: 10px; }
+    p { margin: 0 0 1em; }
+    .kicker { display: inline-block; margin-bottom: 12px; color: var(--accent); font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .standfirst { margin-top: 16px; color: var(--muted); font-size: 1.08rem; max-width: var(--text); }
+    .note { color: var(--muted); font-size: .9rem; }
+    .body { margin-top: 26px; }
+    .body p { max-width: var(--text); }
+
+    /* centered reading column: headings, lead text, and paragraphs sit in the middle of the page */
+    .wrap > .kicker { display: block; text-align: center; }
+    .wrap > h2 { margin-inline: auto; text-align: center; }
+    .wrap > h3 { text-align: center; }
+    .standfirst { margin-inline: auto; text-align: center; }
+    .body { max-width: var(--text); margin-inline: auto; }
+    .body p { max-width: none; }
+    .wrap > .note { max-width: var(--text); margin-inline: auto; }
+    figure img { margin-inline: auto; }
+    figcaption { margin-inline: auto; max-width: var(--text); }
+    .algo { margin-inline: auto; }
+    .task h4 { text-align: center; }
+    .task > .note { max-width: var(--text); margin-inline: auto; }
+    .small-grid { margin-inline: auto; }
+    footer .wrap { text-align: center; }
+
+    /* top bar */
+    .bar { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.92); backdrop-filter: saturate(1.4) blur(10px); -webkit-backdrop-filter: saturate(1.4) blur(10px); border-bottom: 1px solid var(--rule); }
+    .bar .wrap { width: min(100% - 2 * var(--gut), var(--wide)); }
+    .bar-in { display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 56px; }
+    .mark { display: inline-flex; align-items: center; gap: 9px; color: var(--ink); text-decoration: none; font-weight: 750; letter-spacing: -0.01em; }
+    .mark svg { width: 18px; height: 18px; }
+    .nav { display: flex; gap: 22px; flex-wrap: wrap; }
+    .nav a { color: var(--muted); text-decoration: none; font-size: .9rem; font-weight: 500; }
+    .nav a:hover { color: var(--ink); }
+
+    /* hero */
+    .hero { position: relative; isolation: isolate; overflow: hidden; display: flex; align-items: center; min-height: clamp(560px, 84vh, 860px); padding-block: clamp(64px, 9vw, 120px); background: #121519; color: #fff; }
+    .hero-bg { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: 0% 50%; }
+    .hero-shade { position: absolute; inset: 0; z-index: -1;
+      background: linear-gradient(90deg, rgba(18,21,25,0) 30%, rgba(18,21,25,.55) 48%, rgba(18,21,25,.9) 62%, rgba(18,21,25,.95) 100%),
+                  linear-gradient(0deg, rgba(18,21,25,.55) 0%, rgba(18,21,25,0) 28%); }
+    .hero-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); width: min(100% - 2 * var(--gut), var(--wide)); margin-inline: auto; }
+    .hero-copy { grid-column: 2; }
+    .hero h1 { font-size: clamp(3rem, 5.6vw, 4.8rem); font-weight: 800; letter-spacing: -0.045em; line-height: .95; }
+    .hero .full { display: block; margin-top: 18px; font-size: clamp(1.1rem, 1.8vw, 1.42rem); font-weight: 560; letter-spacing: -0.018em; line-height: 1.28; color: #eceef2; max-width: none; }
+    .byline { margin: 22px 0 0; color: #bfc5cf; font-size: .98rem; }
+    .lead { margin: 20px 0 0; font-size: 1.1rem; line-height: 1.6; color: #dfe3ea; }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 8px; border: 1.5px solid rgba(255,255,255,.85); color: #fff; text-decoration: none; font-weight: 600; font-size: .95rem; background: transparent; }
+    .btn svg { width: 16px; height: 16px; }
+    .btn:hover { background: rgba(255,255,255,.12); color: #fff; }
+    .btn--primary { background: #fff; border-color: #fff; color: var(--ink); }
+    .btn--primary:hover { background: #f4e3e0; color: var(--ink); }
+    .btn[aria-disabled="true"] { border-color: rgba(255,255,255,.28); color: rgba(255,255,255,.55); pointer-events: none; }
+    .hero-cap { margin: 26px 0 0; font-size: .8rem; line-height: 1.5; color: #b9c0ca; border-left: 2px solid rgba(255,255,255,.35); padding-left: 12px; }
+    .hero-cap b { color: #fff; }
+    .bg-toggle { position: absolute; right: var(--gut); bottom: 18px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 999px; background: rgba(10,12,16,.5); color: #fff; border: 1px solid rgba(255,255,255,.35); font: 500 .78rem/1 var(--sans); cursor: pointer; }
+    .bg-toggle:hover { background: rgba(10,12,16,.72); }
+
+    /* media */
+    .frame { margin-top: 32px; border-radius: 12px; overflow: hidden; background: #0f1114; box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 12px 32px rgba(15,17,20,.12); }
+    .frame video { width: 100%; }
+    figure { margin: 32px 0 0; }
+    figure img { width: 100%; border-radius: 8px; background: #fff; }
+    figure.narrow img { max-width: 640px; margin-inline: auto; }
+    figcaption { margin-top: 12px; color: var(--muted); font-size: .92rem; line-height: 1.55; }
+    figcaption b { color: var(--ink); }
+    .pair { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; align-items: center; margin-top: 32px; }
+    .pair figure { margin: 0; }
+    .pair .sub { margin-top: 8px; text-align: center; color: var(--muted); font-size: .88rem; }
+
+    /* cards */
+    .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 28px; }
+    .card { background: var(--paper); border: 1px solid var(--rule); border-radius: 12px; padding: 22px 24px; }
+    .sec--band .card { background: #fff; }
+    .card h4 { margin: 0 0 6px; font-size: 1rem; font-weight: 650; }
+    .card .tag { display: inline-block; margin-bottom: 10px; color: var(--accent); font-size: .76rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+    .card p:last-child { margin-bottom: 0; }
+    .card .eq { margin: 6px 0 14px; text-align: center; font-size: 1.05rem; }
+    .card ul { margin: 0; padding-left: 1.1em; }
+    .card li { margin-bottom: 6px; }
+    .rq { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin-top: 28px; }
+    .rq .card { padding: 16px 16px 18px; font-size: .92rem; line-height: 1.5; }
+    .rq .card b { display: block; color: var(--accent); font-size: .8rem; letter-spacing: .06em; margin-bottom: 6px; }
+    .eqblock { margin: 14px 0 18px; overflow-x: auto; }
+
+    /* algorithm */
+    .algo { max-width: none; margin: 18px 0 0; border-top: 2px solid var(--ink); border-bottom: 2px solid var(--ink); padding: 10px 18px; font-size: .95rem; background: #fff; }
+    .algo .head { border-bottom: 1px solid var(--rule); padding-bottom: 6px; margin-bottom: 8px; }
+    .algo ol { margin: 4px 0 4px 1.4rem; padding: 0; line-height: 1.9; }
+    .algo .in { margin-left: 1.2rem; }
+    .algo .c { color: var(--muted); }
+
+    /* tables */
+    .tbl-wrap { margin-top: 28px; overflow-x: auto; }
+    table.tbl { width: 100%; border-collapse: collapse; font-size: .93rem; font-variant-numeric: tabular-nums; background: #fff; }
+    .tbl caption { caption-side: bottom; text-align: left; margin-top: 10px; color: var(--muted); font-size: .88rem; }
+    .tbl th, .tbl td { padding: 9px 12px; text-align: center; border-bottom: 1px solid var(--rule); }
+    .tbl thead th { border-bottom: 2px solid var(--ink); font-weight: 650; }
+    .tbl tbody tr:last-child td { border-bottom: 2px solid var(--ink); }
+    .tbl td:first-child, .tbl th:first-child { text-align: left; }
+    .tbl small { color: var(--muted); }
+    .tbl tr.ours td { background: var(--accent-tint); font-weight: 650; }
+    .tbl tr.inc td { color: var(--muted); }
+    .tbl tr.grp td { background: var(--band); color: var(--muted); font-style: italic; text-align: center; }
+
+    /* real-robot clips */
+    .task { margin-top: 30px; }
+    .task h4 { margin: 0 0 10px; font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+    .clips { display: grid; gap: 8px; align-items: start; }
+    .clips--6 { grid-template-columns: repeat(5, minmax(0, 1fr)) 10px minmax(0, 1fr); }
+    .clips--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .clips video { width: 100%; border-radius: 8px; aspect-ratio: 9/16; object-fit: cover; background: #0f1114; }
+    .lbl { font-size: .85rem; font-weight: 650; margin: 0 0 6px; }
+    .lbl.ok { color: var(--ok); }
+    .lbl.fail { color: var(--fail); }
+    .span5 { grid-column: 1 / 6; }
+    .span1 { grid-column: 7 / 8; }
+    .sep { grid-column: 6 / 7; }
+    .two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .small-grid { max-width: 420px; }
+
+    footer { border-top: 1px solid var(--rule); padding-block: 36px; color: var(--muted); font-size: .88rem; }
+
+    @media (max-width: 1240px) { .hero-grid { grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); } }
+    @media (max-width: 1040px) { .hero .lead { font-size: 1rem; } .hero .byline { font-size: .9rem; } }
+    @media (max-width: 960px) {
+      .rq { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .pair { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 880px) {
+      .hero { display: block; min-height: 0; padding-block: 0 48px; }
+      .hero-bg { position: relative; inset: auto; z-index: 0; height: auto; aspect-ratio: 16 / 10; object-position: 24% 50%; }
+      .hero-shade { display: none; }
+      .hero-grid { grid-template-columns: 1fr; padding-top: 28px; }
+      .hero-copy { grid-column: 1; }
+      .bg-toggle { top: 12px; bottom: auto; }
+      .nav { display: none; }
+      .cards, .two { grid-template-columns: 1fr; }
+      .clips--6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .span5, .span1 { grid-column: 1 / -1; }
+      .sep { display: none; }
+    }
+    @media (max-width: 520px) { .rq { grid-template-columns: 1fr; } }
+    .sep-dot { display: none; }
+    @media (max-width: 700px) { br.w { display: none; } .sep-dot { display: inline; } }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  </style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <a class="mark" href="#top" aria-label="FIRe, back to top">
+      FIRe
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#video">Video</a>
+      <a href="#method">Method</a>
+      <a href="#experiments">Experiments</a>
+      <a href="#ablation">Ablation</a>
+      <a href="#clips">Real-robot clips</a>
+      <a href="#backbones">Backbones</a>
+      <a href="#appendix">Appendix</a>
+      <a href="#unseen">Extra demo</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<section class="hero" aria-label="FIRe">
+  <video class="hero-bg" id="hero-bg" autoplay muted loop playsinline preload="auto" poster="static/images/hero_poster.jpg" aria-hidden="true">
+    <source src="static/videos/hero_bulb.mp4" type="video/mp4">
+  </video>
+  <div class="hero-shade" aria-hidden="true"></div>
+  <div class="hero-grid">
+    <div class="hero-copy">
+      <h1>FIRe</h1>
+      <span class="full">Force-Informed Residual Policy<br>for Contact-Rich Manipulation<br>with Vision-Language-Action Models</span>
+      <p class="byline">Anonymous authors<span class="sep-dot"> &middot;</span> <br class="w">Submitted to IEEE Robotics and Automation Letters (RA-L), 2026</p>
+      <p class="lead">A frozen, fine-tuned VLA plans long-horizon action chunks, <br class="w">and a force-aware residual policy trained in simulation <br class="w">corrects every action at the control rate, <br class="w">with no task-specific dense reward.</p>
+      <div class="actions">
+        <a class="btn btn--primary" href="#video">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>
+          Watch video
+        </a>
+        <a class="btn" href="https://anonymous.4open.science/r/FIRe-3E69/" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 4 1.5 8l4 4M10.5 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Code
+        </a>
+        <span class="btn" aria-disabled="true">Paper (coming soon)</span>
+      </div>
+      <p class="hero-cap"><b>Background: extra demo, not in the paper.</b> <br class="w">Zero-shot on an unseen object: the robot inserts a DC barrel plug, <br class="w">and the bulb lights up only when the plug is fully seated. <br class="w">The VLA was fine-tuned on demonstrations of this task; <br class="w">the FIRe residual, trained in simulation for Peg Insert, <br class="w">never saw this object and runs without retraining.</p>
+    </div>
+  </div>
+  <button class="bg-toggle" id="bg-toggle" type="button" aria-pressed="false">Pause background</button>
+</section>
+
+<section id="video" class="sec">
+  <div class="wrap">
+    <span class="kicker">Overview</span>
+    <h2>Overview video</h2>
+    <div class="frame">
+      <video controls playsinline preload="metadata" poster="static/images/overview_poster.jpg">
+        <source src="static/videos/FIRe.mp4" type="video/mp4">
+      </video>
+    </div>
+  </div>
+</section>
+
+<section class="sec sec--band" aria-labelledby="abstract-h">
+  <div class="wrap">
+    <h2 id="abstract-h">Abstract</h2>
+    <div class="body">
+      <p>Vision-Language-Action (VLA) models adapt to manipulation tasks from a few demonstrations, but remain brittle in contact-rich assembly, where visual observations fail to capture contact state and chunked VLA actions cannot react at the control rate. We present Force-Informed Residual Policy (FIRe), which augments a frozen, fine-tuned VLA with a force-aware residual RL policy. The VLA provides long-horizon action chunks, while the residual policy runs at every control step, observes force, and adds bounded corrections through a slow-fast asynchronous loop. Trained in simulation with only a sparse task-success reward and a task-agnostic force-aware dense reward, FIRe transfers zero-shot to a torque-controlled manipulator in the real world. On three real-robot assembly tasks, Peg Insert, Gear Mesh, and Nut Thread, it improves success over the VLA-based policy by an average of 64.5 percentage points and up to 90.0, reaching success rates that did not differ significantly from those of an RL policy trained with task-specific dense rewards, without requiring such reward engineering. Moreover, when the residual policy trained with GR00T for each task is applied to &pi;<sub>0.5</sub> and OpenVLA without retraining or architectural changes, it improves the success of all three backbones on all tasks.</p>
+    </div>
+  </div>
+</section>
+
+<section id="problem" class="sec">
+  <div class="wrap">
+    <span class="kicker">Motivation</span>
+    <h2>VLA chunks cannot feel contact, <br class="w">and RL needs a reward engineered for every task</h2>
+    <div class="cards">
+      <div class="card">
+        <span class="tag">Vision-Language-Action models</span>
+        <ul>
+          <li>Rely on vision and language, so force sensing goes largely unused.</li>
+          <li>Execute action chunks open-loop and cannot react to contact events at the control rate.</li>
+          <li>The end-effector occludes exactly the region where precision matters.</li>
+          <li>Teleoperated demonstrations of contact-rich skills are costly to collect.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag">Reinforcement learning from scratch</span>
+        <ul>
+          <li>Can exploit force feedback for reactive contact control.</li>
+          <li>Needs a dense reward engineered anew for every task.</li>
+          <li>Suffers from high sample complexity in continuous state-action spaces.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="standfirst">FIRe combines the two: a frozen, action-head fine-tuned VLA provides long-horizon guidance, <br class="w">while a force-aware residual policy, trained in simulation with only a sparse success reward <br class="w">and a task-agnostic force-aware reward, corrects the trajectory at every control step <br class="w">and transfers zero-shot to a real Franka FR3.</p>
+    <figure>
+      <img src="static/images/figure1_tasks.png" alt="Real-robot execution snapshots of Peg Insert, Gear Mesh, and Nut Thread" style="max-width: 860px;">
+      <figcaption>Real-robot execution of the three contact-rich assembly tasks. The tasks require precise contact regulation beyond visual observation alone.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="method" class="sec sec--band">
+  <div class="wrap">
+    <span class="kicker">Method</span>
+    <h2>A force-aware residual corrects a frozen VLA <br class="w">at the control rate</h2>
+    <figure>
+      <img src="static/images/figure2.png" alt="Overview of FIRe">
+      <figcaption><b>Overview of FIRe.</b> Without FIRe (top row), the frozen VLA executes its action chunks open-loop and the insertion fails. With FIRe (bottom row), the force-aware residual policy \(\pi_{\mathrm{res}}\) corrects every action of the chunk at the control rate, and the same task succeeds.</figcaption>
+    </figure>
+    <div class="body">
+      <p>FIRe forms the final control command by adding the corrective output of a residual policy to the base action of a frozen VLA. The VLA generates an action chunk of length \(T\) from visual and language inputs and functions as a <b>trajectory planner</b> providing long-horizon guidance; the residual policy \(\pi_{\mathrm{res}}\) observes proprioception and contact force at every control step and functions as a <b>closed-loop contact controller</b>. The VLA weights stay frozen; only its action head is fine-tuned before freezing. GR00T is the primary backbone, and the residual policy trained with GR00T is also applied to \(\pi_{0.5}\) and OpenVLA without retraining.</p>
+    </div>
+
+    <h3>Two policies, two observations</h3>
+    <div class="cards" style="margin-top: 12px;">
+      <div class="card">
+        <span class="tag">VLA observation &middot; once per chunk</span>
+        <p class="eq">\( o_t^{\mathrm{VLA}} = \{\, \{I_k\},\; p_{ee}^{abs},\; \ell \,\} \)</p>
+        <p>RGB images \(\{I_k\}\) from two external cameras and one wrist camera, the absolute end-effector pose \(p_{ee}^{abs} \in \mathbb{R}^7\), and a natural-language task instruction \(\ell\). No force; read only when a new chunk is generated.</p>
+      </div>
+      <div class="card">
+        <span class="tag">Residual observation &middot; every control step</span>
+        <p class="eq">\( o_t^{\mathrm{res}} = \{\, p_{ee}^{rel},\; v_{ee},\; F_t,\; F_{\mathrm{ref}},\; a_{t-1} \,\} \)</p>
+        <p>End-effector pose \(p_{ee}^{rel} \in \mathbb{R}^7\) with the position measured from the fixed object (e.g., the hole), end-effector velocity \(v_{ee} \in \mathbb{R}^6\), <b>contact force</b> \(F_t \in \mathbb{R}^3\) from the wrist sensor, the reference contact force \(F_{\mathrm{ref}}\) of the force-aware reward, and the previously executed command \(a_{t-1}\). Position, velocity, and force are expressed in the current end-effector frame.</p>
+      </div>
+    </div>
+
+    <h3>Residual action composition</h3>
+    <div class="body" style="margin-top: 0;">
+      <p>Both policies act in the same <em>relative-pose</em> representation, a 3-DOF position offset and a 3-DOF rotation offset of the end-effector. The residual output is a bounded correction \(a_t^{\mathrm{res}} \in \mathbb{R}^6\), so the final command is a direct sum,</p>
+      <div class="eqblock">\[ a_t = a_t^{\mathrm{VLA}} + a_t^{\mathrm{res}}, \]</div>
+      <p>executed by a task-space impedance controller at 1&nbsp;kHz while the policies run at 15&nbsp;Hz, with commands interpolated in between. Bounding \(a_t^{\mathrm{res}}\) keeps the VLA in charge of <em>where</em> the motion goes, while the residual decides <em>how</em> the contact is negotiated.</p>
+    </div>
+
+    <h3>Slow-fast asynchronous deployment</h3>
+    <div class="body" style="margin-top: 0;">
+      <p>A single VLA inference takes longer than one control step, so waiting for it would stall the controller exactly when contact demands reactivity. FIRe instead <b>prefetches</b> the next chunk asynchronously at the midpoint of the current one and swaps it in once the current chunk is exhausted, so the control loop never blocks and the residual keeps correcting at a fixed rate.</p>
+    </div>
+    <div class="algo">
+      <p class="head"><b>Algorithm 1</b>&ensp;FIRe deployment control loop</p>
+      <p style="margin-bottom: 4px;"><b>Require:</b> frozen VLA \(\pi_{\mathrm{VLA}}\), residual policy \(\pi_{\mathrm{res}}\), chunk length \(T\)</p>
+      <ol>
+        <li>observe \(o^{\mathrm{VLA}}\);&ensp;\(\mathbf{a}^{\mathrm{VLA}} \leftarrow \pi_{\mathrm{VLA}}(o^{\mathrm{VLA}})\);&ensp;\(i \leftarrow 0\) <span class="c">(initial blocking chunk)</span></li>
+        <li><b>while</b> episode not terminated <b>do</b></li>
+        <li class="in">observe \(o^{\mathrm{res}}\)</li>
+        <li class="in"><b>if</b> \(i = \lfloor T/2 \rfloor\): observe \(o^{\mathrm{VLA}}\); prefetch the next chunk <span class="c">(non-blocking)</span></li>
+        <li class="in"><b>if</b> \(i = T\): swap in the prefetched chunk;&ensp;\(i \leftarrow 0\)</li>
+        <li class="in">\(a^{\mathrm{res}} \leftarrow \pi_{\mathrm{res}}(o^{\mathrm{res}})\) <span class="c">(every control step)</span></li>
+        <li class="in">execute \(a = a^{\mathrm{VLA}}_{i} + a^{\mathrm{res}}\) with the task-space impedance controller</li>
+        <li class="in">\(i \leftarrow i + 1\)</li>
+        <li><b>end while</b></li>
+      </ol>
+    </div>
+
+    <h3>A reward that does not need re-engineering</h3>
+    <div class="body" style="margin-top: 0;">
+      <p>RL for contact-rich assembly usually depends on a dense reward engineered anew for every task. In FIRe, the goal-directed guidance such rewards normally provide comes from the VLA-based action instead, which warm-starts exploration near the goal. What remains is a sparse success indicator plus a task-agnostic force term, the <b>FIRe reward (FIRe-rew)</b>, identical in form and hyperparameters across all tasks:</p>
+      <div class="eqblock">\[ r = r_s + r_f, \qquad r_s = 1[\text{success}] \]</div>
+      <p>The force-aware reward is defined on the exceedance of the contact force over a reference contact-force level \(F_{\mathrm{ref}}\), \(e_t = \max\left(0,\; \lVert F_t \rVert - F_{\mathrm{ref}}\right)\), as</p>
+      <div class="eqblock">\[ r_f = -\alpha\, e_{t+1} + \lambda_f \left( \gamma\, \phi_f(e_{t+1}) - \phi_f(e_t) \right), \qquad \phi_f(e) = -\log\!\left( c_f\, e + 1 \right), \]</div>
+      <p>where \(\alpha\), \(\lambda_f\), and \(c_f\) are positive coefficients, and \(\phi_f\) is a logarithmic function of the exceedance that is zero when the contact force is at or below \(F_{\mathrm{ref}}\). The reward \(r_f\) is nonzero only for contact above \(F_{\mathrm{ref}}\), so it gives no incentive to make or maintain contact; the drive toward contact comes from \(r_s\) and the VLA-based action, which carries the policy into the contact region that completion requires.</p>
+    </div>
+
+    <h3>Training: asymmetric actor-critic, zero-shot transfer</h3>
+    <div class="body" style="margin-top: 0;">
+      <p>The residual policy is trained with PPO in Isaac Lab using an asymmetric actor-critic: the actor uses only the deployment-accessible observation \(o_t^{\mathrm{res}}\), while the critic additionally receives the privileged simulator state</p>
+      <div class="eqblock">\[ s_t = \{\, o_t^{\mathrm{res}},\; q_j,\; p_h,\; p_h^{rel},\; p_f,\; k_p,\; \epsilon_{p} \,\}, \]</div>
+      <p>that is, joint positions, held- and fixed-object poses, the low-level controller gain, and the pose threshold. During training, Gaussian noise with a standard deviation of 1&nbsp;mm per axis is added at every step when combining the VLA action and the residual, and the initial hand pose is randomized within &plusmn;20&nbsp;mm in \(x\) and \(y\) and &plusmn;10&nbsp;mm in \(z\). The remaining randomization and the observation noise on the pose and force inputs follow FORGE. The trained policy is deployed <b>zero-shot</b> on the real Franka FR3 with no real-world fine-tuning.</p>
+    </div>
+  </div>
+</section>
+
+<section id="experiments" class="sec">
+  <div class="wrap">
+    <span class="kicker">Experiments</span>
+    <h2>Five research questions, <br class="w">in simulation and on a real robot</h2>
+    <div class="rq">
+      <div class="card"><b>RQ1</b>Without any task-specific dense reward, does FIRe reach success rates comparable to an RL policy trained with such rewards in simulation?</div>
+      <div class="card"><b>RQ2</b>Under an identical training budget, does the VLA warm-start enable FIRe to learn where from-scratch RL trained with the same FIRe-rew fails or converges slowly?</div>
+      <div class="card"><b>RQ3</b>On a real robot, does FIRe achieve higher success on contact-rich assembly than the VLA-based policy and reach the success level of an RL policy trained with task-specific dense rewards?</div>
+      <div class="card"><b>RQ4</b>Do the force observation and the force-aware reward in the residual policy each contribute to real-world success?</div>
+      <div class="card"><b>RQ5</b>Can the residual formulation be applied across different action-chunking VLA backbones?</div>
+    </div>
+
+    <h3>Experimental setup</h3>
+    <div class="pair">
+      <figure>
+        <img src="static/images/figure3_a_platform.png" alt="Franka FR3 platform with a wrist force sensor and three cameras">
+        <p class="sub">(a) Real-robot platform</p>
+      </figure>
+      <figure>
+        <img src="static/images/figure3_b.png" alt="3D-printed parts for Peg Insert, Gear Mesh, and Nut Thread" style="max-width: 260px; margin-inline: auto;">
+        <p class="sub">(b) Task parts</p>
+      </figure>
+    </div>
+    <p class="note" style="margin-top: 12px;">(a) The real-robot platform is a Franka FR3 arm with a wrist-mounted 3-axis force sensor and three cameras. (b) The three assembly tasks are Peg Insert, Gear Mesh, and Nut Thread, which use 3D-printed parts. The circle marks the 5&nbsp;mm lateral tolerance of Peg Insert.</p>
+    <div class="body">
+      <p><b>Baselines and ablations.</b> <em>VLA</em> executes the action-head fine-tuned GR00T without residual correction. <em>RL dense</em> is trained from scratch with a task-specific dense reward (FORGE), requiring three distinct reward functions for the three tasks, whereas FIRe uses the identical FIRe-rew on all tasks. <em>RL FIRe-rew</em> trains the same from-scratch controller with FIRe-rew, isolating the VLA warm-start under a matched reward. <em>FIRe w/o force</em> removes F<sub>t</sub> and F<sub>ref</sub> from both the residual observation and the reward. <em>FIRe obs-only</em> keeps F<sub>t</sub> in the observation but removes the force-aware reward, <em>FIRe rew-only</em> keeps the force-aware reward but removes F<sub>t</sub> and F<sub>ref</sub> from the observation, and FIRe uses force in both. All methods act in the same relative-pose action space through the same impedance controller, with every learned policy clipped to the same bound, and share the same evaluation protocol per task.</p>
+      <p class="note">Real-robot success rates are reported with 95% Wilson intervals. Success rates are compared between FIRe and each method with a two-sided Fisher exact test with Holm correction within each RQ, and per-trial continuous measures are compared between the successful and failed trials of a method with a two-sided Mann&ndash;Whitney U test.</p>
+    </div>
+  </div>
+</section>
+
+<section id="sim" class="sec sec--band">
+  <div class="wrap">
+    <span class="kicker">Simulation &middot; RQ1, RQ2</span>
+    <h2>Dense-reward-level success in simulation, <br class="w">made feasible by the VLA warm-start</h2>
+    <div class="body">
+      <p>FIRe reached peak success rates of <b>100%</b>, <b>100%</b>, and <b>97%</b> on Peg Insert, Gear Mesh, and Nut Thread, respectively. At the final checkpoint, its success rates on these tasks were 90%, 98%, and 91%. RL dense reached peak success rates of 94%, 100%, and 100% on these tasks, and the same values at the final checkpoint. The VLA-based policy together with a force-aware residual was thus sufficient to reach dense-reward-level performance in simulation <em>without any task-specific reward engineering</em> (RQ1).</p>
+      <p>Under a matched training budget (RQ2), FIRe and RL FIRe-rew use the same reward and the same action bound, and only in FIRe is the residual added to the VLA-based action, so the comparison isolates the VLA warm-start. Using the epoch at which each method first reaches 80% success: on Peg Insert, RL FIRe-rew did not reach 80% within the budget and ended training at 49%, whereas FIRe reached 80% around epoch 107. On Gear Mesh both converged, but FIRe reached 80% by epoch ~15 versus ~101 for RL FIRe-rew. On Nut Thread, RL FIRe-rew remained at 0% throughout training while FIRe reached 80% around epoch 37.</p>
+    </div>
+    <figure>
+      <img src="static/images/figure4.png" alt="Simulation learning curves for all methods">
+      <figcaption>Simulation learning curves (episode success rate vs. training epoch) under a matched budget across methods. Shaded bands indicate variation across three seeds.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="real" class="sec">
+  <div class="wrap">
+    <span class="kicker">Real robot &middot; RQ3</span>
+    <h2>On the real robot, <br class="w">FIRe improves over the VLA on every task</h2>
+    <div class="body">
+      <p>Across the three tasks, FIRe improved over the VLA-based policy by <b>+73.4</b>, <b>+90.0</b>, and <b>+30.0</b> percentage points on Peg Insert, Gear Mesh, and Nut Thread, respectively. On every task, the 95% Wilson interval of FIRe lay above that of the VLA-based policy, and the difference was significant at p &le; 0.022. Regarding RQ3, RL dense reached 86.7% on Peg Insert, 2.7 %p from the 84% reported for FORGE under comparable conditions, and FIRe, without any task-specific dense reward, reached success rates on all three tasks whose intervals overlapped with those of RL dense and that <b>did not differ significantly</b> from them (p = 1). The same action-head fine-tuned VLA attained 96.7% on a pick-and-place task that does not require precise contact regulation, with the same demonstration budget, indicating that the failures of the VLA-based policy arose in contact-rich tasks. On Gear Mesh, FIRe, FIRe obs-only, and RL dense all reached 100%, so the ablation evidence for RQ4 rests on Peg Insert.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Method</th><th>Peg Insert</th><th>Gear Mesh</th><th>Nut Thread</th></tr></thead>
+        <tbody>
+          <tr><td>VLA</td><td>23.3% (7/30) <small>[11.8, 40.9]</small></td><td>10.0% (3/30) <small>[3.5, 25.6]</small></td><td>3.3% (1/30) <small>[0.6, 16.7]</small></td></tr>
+          <tr><td>RL dense</td><td>86.7% (26/30) <small>[70.3, 94.7]</small></td><td>100.0% (30/30) <small>[88.6, 100.0]</small></td><td>33.3% (10/30) <small>[19.2, 51.2]</small></td></tr>
+          <tr><td>FIRe w/o force</td><td>43.3% (13/30) <small>[27.4, 60.8]</small></td><td>93.3% (28/30) <small>[78.7, 98.2]</small></td><td>6.7% (2/30) <small>[1.8, 21.3]</small></td></tr>
+          <tr><td>FIRe obs-only</td><td>70.0% (21/30) <small>[52.1, 83.3]</small></td><td>100.0% (30/30) <small>[88.6, 100.0]</small></td><td>16.7% (5/30) <small>[7.3, 33.6]</small></td></tr>
+          <tr><td>FIRe rew-only</td><td>56.7% (17/30) <small>[39.2, 72.6]</small></td><td>90.0% (27/30) <small>[74.4, 96.5]</small></td><td>3.3% (1/30) <small>[0.6, 16.7]</small></td></tr>
+          <tr class="ours"><td>FIRe (ours)</td><td>96.7% (29/30) <small>[83.3, 99.4]</small></td><td>100.0% (30/30) <small>[88.6, 100.0]</small></td><td>33.3% (10/30) <small>[19.2, 51.2]</small></td></tr>
+          <tr class="inc"><td>Inc. over VLA (%p)</td><td>+73.4</td><td>+90.0</td><td>+30.0</td></tr>
+        </tbody>
+        <caption>Real-robot task success rates over 30 trials per method. Parentheses give successful over total trials, and brackets give 95% Wilson intervals (%). The last row is FIRe's gain over the VLA-based policy in percentage points (%p).</caption>
+      </table>
+    </div>
+    <figure>
+      <img src="static/images/figure5.png" alt="Real-robot success under initial XY pose perturbations">
+      <figcaption>Real-robot success under initial XY pose perturbations of up to 16&nbsp;mm, with rows for tasks and columns for methods. Concentric rings mark perturbation radii of 4 (the hole on Peg Insert), 8, 12, and 16&nbsp;mm, with per-ring success rates annotated. Green markers indicate successful trials and red markers indicate failures.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="ablation" class="sec sec--band">
+  <div class="wrap">
+    <span class="kicker">Ablation &middot; RQ4</span>
+    <h2>Each use of contact force contributes: <br class="w">removing either one lowers success</h2>
+    <div class="body">
+      <p>The ablations form a two-by-two design that adds the force observation, the force-aware reward, or both to the force-blind FIRe w/o force, which reached 43.3% on Peg Insert. FIRe obs-only, which adds the force observation alone, reached 70.0%, and FIRe rew-only, which adds the force-aware reward alone, reached 56.7%. FIRe, which combines both, reached <b>96.7%</b>, significantly above FIRe obs-only (p = 0.012) and FIRe rew-only (p &lt; 0.001). Removing either component from FIRe therefore lowered success significantly, and neither component alone reached the success of FIRe: the force observation and the force-aware reward each contributed to the success of FIRe.</p>
+    </div>
+
+    <h3>Contact force analysis</h3>
+    <div class="body" style="margin-top: 0;">
+      <p>For each real-robot trial we computed the peak contact force and the intervals in which the contact force stayed above F<sub>ref</sub>, up to task completion for successful trials and up to the end of the episode for failed trials. The figure below classifies each failure by two criteria. The upper bar gives the geometric mode by where the tool ended: <em>entry failure</em> when the tool was aligned over the hole but did not enter, <em>surface miss</em> when it stayed on the top surface without aligning, and <em>drift-off</em> when it left the top surface. The lower bar gives the force mode by the contact pattern while the held part was on the top surface of the mating part: <em>excessive pressing</em> when the force stayed above F<sub>ref</sub> for at least 1&nbsp;s in a row, <em>unstable contact</em> when contact on the surface lasted less than 1&nbsp;s or the lateral force exceeded the axial force, and <em>stalled</em> otherwise. For FIRe w/o force, which does not observe F<sub>ref</sub>, the median F<sub>ref</sub> assigned to the other four methods, 7.3&nbsp;N, was used as the reference. On Nut Thread, the successful and failed trials of FIRe did not differ significantly in peak contact force (18.3 versus 17.3&nbsp;N, p = 0.78) or in the share of contact time above F<sub>ref</sub> (78.4% versus 73.2%, p = 0.13). The failure modes are therefore analyzed on Peg Insert.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr><th rowspan="2">Method</th><th rowspan="2">Peak (N)</th><th colspan="2">Sustained trials</th></tr>
+          <tr><th>Inserted</th><th>Interval (s), success / failure</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>VLA</td><td>11.6</td><td>3/23</td><td>1.4 / 3.2</td></tr>
+          <tr><td>FIRe w/o force</td><td>7.3</td><td>3/7</td><td>2.0 / 2.4</td></tr>
+          <tr><td>FIRe obs-only</td><td>9.5</td><td>6/13</td><td>1.6 / 3.9</td></tr>
+          <tr><td>FIRe rew-only</td><td>12.1</td><td>7/15</td><td>1.3 / 1.4</td></tr>
+          <tr class="ours"><td>FIRe (ours)</td><td>11.2</td><td>12/12</td><td>1.9 / &ndash;</td></tr>
+        </tbody>
+        <caption>Real-robot contact force on Peg Insert. Peak and interval are medians over trials. Sustained trials are those in which the contact force stayed above F<sub>ref</sub> for at least 1&nbsp;s in a row.</caption>
+      </table>
+    </div>
+    <div class="two" style="margin-top: 28px; align-items: start;">
+      <figure style="margin-top: 0;">
+        <img src="static/images/figure6.png" alt="Real-robot failure modes per method">
+        <figcaption>Real-robot failure modes per method on the three tasks.</figcaption>
+      </figure>
+      <figure style="margin-top: 0;">
+        <img src="static/images/figure7.png" alt="Contact force and held-part height in successful FIRe trials">
+        <figcaption>Contact force and held-part height in successful FIRe trials.</figcaption>
+      </figure>
+    </div>
+    <div class="body">
+      <p>Because r<sub>f</sub> acts only on contact above F<sub>ref</sub>, we compared across methods in the table above whether the sustained trials on Peg Insert ended in insertion. <b>All 12</b> sustained trials of FIRe ended in insertion, a share significantly higher than the 13&ndash;47% of each of the other four methods (p &le; 0.011). The exceedance intervals of FIRe lasted a median of 1.9&nbsp;s, and in 10 of the 12 trials the peg entered the hole during the interval. In FIRe obs-only, which observes force but lacks r<sub>f</sub>, 7 of the 13 sustained trials failed. In all 7, the peg kept pressing on the top surface above F<sub>ref</sub> without entering the hole, and their exceedance intervals lasted a median of 3.9&nbsp;s.</p>
+      <p>By force mode in the failure-mode figure above, the failures on Peg Insert differed with the use of force. In FIRe w/o force, which lacks both the force observation and r<sub>f</sub>, 12 of the 17 failures were unstable contact, 4 were stalled, and 1 was excessive pressing. Of the 12, 8 also drifted off the top surface. In FIRe obs-only, 7 of the 9 failures were excessive pressing, and these were the 7 failed sustained trials in the table above. The 13 failures of FIRe rew-only, which uses r<sub>f</sub> without the force observation, mixed the two patterns, with 7 unstable contact and 6 excessive pressing. The only failure of FIRe, which uses both, was unstable contact, and no failure of FIRe was excessive pressing. In the successful FIRe trials, from 1.5&nbsp;s before to 0.5&nbsp;s after the held part reached the top surface of the mating part, the median force stayed within or below the F<sub>ref</sub> range of 5&ndash;10&nbsp;N on all three tasks.</p>
+      <p>On Nut Thread, the success rates were 33.3% for FIRe, 16.7% for FIRe obs-only, 6.7% for FIRe w/o force, and 3.3% for FIRe rew-only. Of the 20 FIRe failures, 14, or 70%, were aligned but not threaded, and their mean lateral error did not differ significantly from that of the successes (1.46 versus 1.38&nbsp;mm, p = 0.70). After reaching the top surface of the mating part, the nut stayed in contact for the remaining median of 24.5&nbsp;s of the episode, and the peak contact force occurred during this contact, a median of 11.9&nbsp;s after reaching the surface in successful trials and 16.3&nbsp;s in failed trials.</p>
+    </div>
+  </div>
+</section>
+
+<section id="clips" class="sec">
+  <div class="wrap">
+    <span class="kicker">Real-robot clips</span>
+    <h2>VLA only vs. FIRe on the real robot</h2>
+    <p class="standfirst">For each task, five successful FIRe rollouts <br class="w">alongside a representative failure of the frozen VLA running alone.</p>
+
+    <div class="task">
+      <h4>Peg Insert</h4>
+      <div class="clips clips--6" data-sync-videos>
+        <p class="lbl ok span5">&#10003;&nbsp;FIRe</p><p class="lbl fail span1">&#10007;&nbsp;VLA only</p>
+        <video muted loop playsinline preload="none"><source src="static/videos/peg_insert/success_1.mp4" type="video/mp4"></video>
+        <video muted loop playsinline preload="none"><source src="static/videos/peg_insert/success_2.mp4" type="video/mp4"></video>
+        <video muted loop playsinline preload="none"><source src="static/videos/peg_insert/success_3.mp4" type="video/mp4"></video>
+        <video muted loop playsinline preload="none"><source src="static/videos/peg_insert/success_4.mp4" type="video/mp4"></video>
+        <video muted loop playsinline preload="none"><source src="static/videos/peg_insert/success_5.mp4" type="video/mp4"></video>
+        <span class="sep" aria-hidden="true"></span>
+        <video muted loop playsinline preload="none"><source src="static/videos/peg_insert/failure_1.mp4" type="video/mp4"></video>
+      </div>
+    </div>
+
+    <div class="task">
+      <h4>Gear Mesh</h4>
+      <div class="clips clips--6" data-sync-videos>
+        <p class="lbl ok span5">&#10003;&nbsp;FIRe</p><p class="lbl fail span1">&#10007;&nbsp;VLA only</p>
+        <video muted loop playsinline preload="none"><source src="static/videos/gear_mesh/success_1.mp4" type="video/mp4"></video>
+        <video muted loop playsinline preload="none"><source src="static/videos/gear_mesh/success_2.mp4" type="video/mp4"></video>
+        <video muted loop playsinline preload="none"><source src="static/videos/gear_mesh/success_3.mp4" type="video/mp4"></video>
+        <video muted loop playsinline preload="none"><source src="static/videos/gear_mesh/success_4.mp4" type="video/mp4"></video>
+        <video muted loop playsinline preload="none"><source src="static/videos/gear_mesh/success_5.mp4" type="video/mp4"></video>
+        <span class="sep" aria-hidden="true"></span>
+        <video muted loop playsinline preload="none"><source src="static/videos/gear_mesh/failure_1.mp4" type="video/mp4"></video>
+      </div>
+    </div>
+
+    <div class="task">
+      <h4>Nut Thread</h4>
+      <div class="two">
+        <div>
+          <p class="lbl ok">&#10003;&nbsp;FIRe, success</p>
+          <div class="clips clips--3" data-sync-videos>
+            <video muted loop playsinline preload="none"><source src="static/videos/nut_thread/success_1.mp4" type="video/mp4"></video>
+            <video muted loop playsinline preload="none"><source src="static/videos/nut_thread/success_2.mp4" type="video/mp4"></video>
+            <video muted loop playsinline preload="none"><source src="static/videos/nut_thread/success_3.mp4" type="video/mp4"></video>
+          </div>
+        </div>
+        <div>
+          <p class="lbl fail">&#10007;&nbsp;FIRe, failure</p>
+          <div class="clips clips--3" data-sync-videos>
+            <video muted loop playsinline preload="none"><source src="static/videos/nut_thread/failure_1.mp4" type="video/mp4"></video>
+            <video muted loop playsinline preload="none"><source src="static/videos/nut_thread/failure_2.mp4" type="video/mp4"></video>
+            <video muted loop playsinline preload="none"><source src="static/videos/nut_thread/failure_3.mp4" type="video/mp4"></video>
+          </div>
+        </div>
+      </div>
+      <p class="note" style="margin-top: 10px;">Both panels run the same FIRe policy. Most failed trials (14 of 20) end with the nut aligned on the bolt but not threaded. Because thread engagement is not observable from the end-effector pose, success is determined manually: successful trials conclude with the liftability check used as the success criterion.</p>
+    </div>
+
+    <div class="task">
+      <h4>Pick &amp; Place</h4>
+      <div class="small-grid">
+        <p class="lbl ok">&#10003;&nbsp;VLA only</p>
+        <div class="clips clips--3" data-sync-videos>
+          <video muted loop playsinline preload="none"><source src="static/videos/pick_place/success_1.mp4" type="video/mp4"></video>
+          <video muted loop playsinline preload="none"><source src="static/videos/pick_place/success_2.mp4" type="video/mp4"></video>
+          <video muted loop playsinline preload="none"><source src="static/videos/pick_place/success_3.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+      <p class="note" style="margin-top: 10px;">A pick-and-place task that does not require precise contact regulation. The action-head fine-tuned VLA (GR00T backbone), trained on 128 teleoperated demonstration episodes, attains 96.7% here without any residual correction, indicating that the failures of the VLA-based policy arose in contact-rich tasks.</p>
+    </div>
+  </div>
+</section>
+
+<section id="backbones" class="sec sec--band">
+  <div class="wrap">
+    <span class="kicker">Backbones &middot; RQ5</span>
+    <h2>A residual trained with GR00T also improves <br class="w">&pi;<sub>0.5</sub> and OpenVLA without retraining</h2>
+    <div class="body">
+      <p>We applied the residual policy trained with GR00T for each task directly to &pi;<sub>0.5</sub> and OpenVLA without retraining or fine-tuning the residual. Each backbone is a base policy whose action head was fine-tuned on the same demonstration data, and the three output the same relative-pose action-chunk representation, so the residual operates in the same way under each backbone's chunk length (16 for GR00T, 8 for &pi;<sub>0.5</sub> and OpenVLA). With the residual, the success rate <b>rose for every backbone on every task</b>. The increase was statistically significant in three of the six transferred pairs, for &pi;<sub>0.5</sub> (p &lt; 0.001) and OpenVLA (p = 0.030) on Peg Insert and for &pi;<sub>0.5</sub> on Gear Mesh (p = 0.005), and the success rates of &pi;<sub>0.5</sub> and OpenVLA with FIRe did not differ significantly from that of GR00T with FIRe on any task (p &ge; 0.12). On Nut Thread, the two backbones reached 13.3% and 16.7%, below the 33.3% of GR00T. The increase was not significant for OpenVLA on Gear Mesh or for &pi;<sub>0.5</sub> and OpenVLA on Nut Thread. These are cases in which the base policy was already near saturation (OpenVLA alone reached 93.3% on Gear Mesh) or the task itself was difficult (Nut Thread).</p>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead>
+          <tr><th rowspan="2">Backbone</th><th colspan="2">Peg Insert</th><th colspan="2">Gear Mesh</th><th colspan="2">Nut Thread</th></tr>
+          <tr><th>VLA</th><th>+FIRe</th><th>VLA</th><th>+FIRe</th><th>VLA</th><th>+FIRe</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>GR00T</td><td>23.3%</td><td><b>96.7%</b></td><td>10.0%</td><td><b>100.0%</b></td><td>3.3%</td><td><b>33.3%</b></td></tr>
+          <tr><td>&pi;<sub>0.5</sub></td><td>20.0%</td><td><b>96.7%</b></td><td>66.7%</td><td><b>100.0%</b></td><td>0.0%</td><td><b>13.3%</b></td></tr>
+          <tr><td>OpenVLA</td><td>56.7%</td><td><b>90.0%</b></td><td>93.3%</td><td><b>100.0%</b></td><td>3.3%</td><td><b>16.7%</b></td></tr>
+        </tbody>
+        <caption>VLA-only and VLA+FIRe success rate across backbones and tasks. Values are real-robot success rates over 30 trials.</caption>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="appendix" class="sec">
+  <div class="wrap">
+    <span class="kicker">Appendix</span>
+    <h2>Implementation settings</h2>
+    <p class="standfirst">All evaluations, including the 30-trial real-robot evaluations, use, for each method and task, <br class="w">the single checkpoint of the first seed that recorded the highest success rate during training.</p>
+    <div class="two" style="margin-top: 28px; align-items: start;">
+      <div class="tbl-wrap" style="margin-top: 0;">
+        <table class="tbl">
+          <thead><tr><th>Setting</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr class="grp"><td colspan="2">Task and success criteria for real robot</td></tr>
+            <tr><td>Peg diameter</td><td>8 mm</td></tr>
+            <tr><td>Peg&ndash;hole radial clearance</td><td>0.08 mm</td></tr>
+            <tr><td>Success tol., Peg Insert</td><td>lateral &le; 5 mm &amp; depth &le; 25 mm</td></tr>
+            <tr><td>Success tol., Gear Mesh</td><td>lateral &le; 10 mm &amp; below surface</td></tr>
+            <tr><td>Success tol., Nut Thread</td><td>nut not liftable (manual)</td></tr>
+            <tr class="grp"><td colspan="2">Low-level control and action</td></tr>
+            <tr><td>VLA action bound, position</td><td>[10, 10, 10] cm</td></tr>
+            <tr><td>Residual a<sub>max</sub>, position</td><td>[5, 5, 5] cm</td></tr>
+            <tr><td>Residual a<sub>max</sub>, rotation</td><td>[0.087, 0.087, 2.36] rad</td></tr>
+            <tr><td>Residual policy rate</td><td>15 Hz</td></tr>
+            <tr><td>Impedance controller rate</td><td>1 kHz</td></tr>
+            <tr><td>VLA action-chunk length <em>T</em></td><td>16 (GR00T), 8 (&pi;<sub>0.5</sub>, OpenVLA)</td></tr>
+            <tr class="grp"><td colspan="2">FIRe-rew hyperparameters</td></tr>
+            <tr><td>r<sub>f</sub> coefficients &alpha;, &lambda;<sub>f</sub>, c<sub>f</sub></td><td>2.5 &times; 10<sup>&minus;3</sup>, 0.01, 1.0</td></tr>
+            <tr><td>Reference contact force F<sub>ref</sub></td><td>5&ndash;10 N, sampled per episode</td></tr>
+            <tr class="grp"><td colspan="2">Training (PPO, asymmetric actor&ndash;critic)</td></tr>
+            <tr><td>Parallel environments</td><td>64</td></tr>
+            <tr><td>Training epochs</td><td>200</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tbl-wrap" style="margin-top: 0;">
+        <table class="tbl">
+          <thead><tr><th>PPO hyperparameter</th><th>Value</th></tr></thead>
+          <tbody>
+            <tr><td>Learning rate</td><td>1 &times; 10<sup>&minus;4</sup></td></tr>
+            <tr><td>Discount &gamma;</td><td>0.995</td></tr>
+            <tr><td>GAE &lambda;</td><td>0.95</td></tr>
+            <tr><td>Clip ratio</td><td>0.2</td></tr>
+            <tr><td>Entropy coefficient</td><td>0</td></tr>
+            <tr><td>Rollout horizon</td><td>128 (Peg Insert, Gear Mesh), 256 (Nut Thread)</td></tr>
+            <tr><td>Minibatch size</td><td>512</td></tr>
+            <tr><td>Update epochs per rollout</td><td>4</td></tr>
+          </tbody>
+          <caption>The remaining PPO hyperparameters referenced in the paper. Shared by all methods.</caption>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="unseen" class="sec sec--band">
+  <div class="wrap">
+    <span class="kicker">Extra demo</span>
+    <h2>Additional demo: <br class="w">zero-shot residual on an unseen object</h2>
+    <div class="frame" data-sync-videos>
+      <video muted loop playsinline preload="none" poster="static/images/unseen_poster.jpg">
+        <source src="static/videos/unseen/dc_jack_vla_vs_fire.mp4" type="video/mp4">
+      </video>
+    </div>
+    <figcaption>This demo is not part of the paper. The robot inserts a DC barrel plug into its jack, and the bulb lights up only when the plug is fully seated. The VLA was fine-tuned on demonstrations of this task. The FIRe residual policy, trained in simulation for Peg Insert, never saw this object during training and is applied zero-shot without retraining. Both videos start when the robot begins its descent toward the jack.</figcaption>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">Anonymous project page for review. Layout adapted from the Academic Project Page Template.</div>
+</footer>
+
+<script>
+  // In file:// previews the page origin is "null" and target=_blank links are blocked; open them in place.
+  if (window.origin === 'null') {
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('a[target="_blank"]').forEach(function (a) { a.removeAttribute('target'); });
+    });
+  }
+
+  // Hero background: honour reduced motion, and let the viewer pause it.
+  (function () {
+    var v = document.getElementById('hero-bg');
+    var b = document.getElementById('bg-toggle');
+    if (!v || !b) return;
+    function set(paused) {
+      if (paused) { v.pause(); } else { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+      b.setAttribute('aria-pressed', paused ? 'true' : 'false');
+      b.textContent = paused ? 'Play background' : 'Pause background';
+    }
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) { v.removeAttribute('autoplay'); set(true); }
+    b.addEventListener('click', function () { set(!v.paused); });
+  })();
+
+  // Fetch each clip group only as it approaches the viewport, then keep its loops in lockstep:
+  // start together once every clip is buffered, and correct drift against the group's first video.
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('[data-sync-videos]').forEach(function (group) {
+      var videos = Array.prototype.slice.call(group.querySelectorAll('video'));
+      if (!videos.length) return;
+      var requested = false, started = false;
+      function start() {
+        if (started) return;
+        started = true;
+        videos.forEach(function (v) { v.currentTime = 0; var p = v.play(); if (p && p.catch) p.catch(function () {}); });
+      }
+      function tryStart() {
+        if (started) return;
+        if (!videos.every(function (v) { return v.readyState >= 3; })) return;
+        start();
+      }
+      function request() {
+        if (requested) return;
+        requested = true;
+        videos.forEach(function (v) { v.addEventListener('canplaythrough', tryStart); v.load(); });
+        setTimeout(start, 8000);
+        tryStart();
+      }
+      if ('IntersectionObserver' in window) {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) { if (!e.isIntersecting) return; io.disconnect(); request(); });
+        }, { rootMargin: '400px 0px' });
+        io.observe(group);
+      } else {
+        request();
+      }
+      if (videos.length < 2) return;
+      setInterval(function () {
+        if (!started) return;
+        var lead = videos[0];
+        if (lead.paused || !lead.duration) return;
+        videos.slice(1).forEach(function (v) {
+          if (!v.duration) return;
+          if (v.paused) { var p = v.play(); if (p && p.catch) p.catch(function () {}); }
+          var drift = Math.abs(v.currentTime - lead.currentTime);
+          drift = Math.min(drift, Math.abs(drift - Math.min(v.duration, lead.duration)));
+          if (drift > 0.3) v.currentTime = Math.min(lead.currentTime, v.duration - 0.05);
+        });
+      }, 5000);
+    });
+  });
+</script>
+</body>
+</html>
